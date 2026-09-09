@@ -105,56 +105,61 @@ class EntityTable<T> extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopTable(BuildContext context) {
+Widget _buildDesktopTable(BuildContext context) {
     final sortColIndex = sortField != null
         ? columns.indexWhere((c) => c.sortField == sortField)
         : -1;
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          showCheckboxColumn: onToggleSelect != null,
-          sortColumnIndex: sortColIndex != -1 ? sortColIndex : null,
-          sortAscending: sortAscending,
-          onSelectAll: onSelectAll,
-          columns: [
-            ...columns.map((col) {
-              return DataColumn(
-                label: Text(col.label),
-                numeric: col.numeric,
-                onSort: col.sortField != null && onSort != null
-                    ? (_, __) => onSort!(col.sortField!)
-                    : null,
-              );
-            }),
-            if (actions != null) const DataColumn(label: Text('Действия')),
-          ],
-          rows: items.map((item) {
-            final id = idOf(item);
-            final isSelected = selected.contains(id);
-
-            return DataRow(
-              selected: isSelected,
-              onSelectChanged: onToggleSelect != null
-                  ? (_) => onToggleSelect!(id)
-                  : null,
-              cells: [
+      child: Center( 
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 800), 
+            child: DataTable(
+              showCheckboxColumn: onToggleSelect != null,
+              sortColumnIndex: sortColIndex != -1 ? sortColIndex : null,
+              sortAscending: sortAscending,
+              onSelectAll: onSelectAll,
+              columns: [
                 ...columns.map((col) {
-                  return DataCell(
-                    col.build(item),
-                    onTap: onTap != null ? () => onTap!(item) : null,
+                  return DataColumn(
+                    label: Text(col.label),
+                    numeric: col.numeric,
+                    onSort: col.sortField != null && onSort != null
+                        ? (_, __) => onSort!(col.sortField!)
+                        : null,
                   );
                 }),
-                if (actions != null)
-                  DataCell(Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: actions!(item),
-                  )),
+                if (actions != null) const DataColumn(label: Text('Действия')),
               ],
-            );
-          }).toList(),
+              rows: items.map((item) {
+                final id = idOf(item);
+                final isSelected = selected.contains(id);
+
+                return DataRow(
+                  selected: isSelected,
+                  onSelectChanged: onToggleSelect != null
+                      ? (_) => onToggleSelect!(id)
+                      : null,
+                  cells: [
+                    ...columns.map((col) {
+                      return DataCell(
+                        col.build(item),
+                        onTap: onTap != null ? () => onTap!(item) : null,
+                      );
+                    }),
+                    if (actions != null)
+                      DataCell(Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: actions!(item),
+                      )),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
         ),
       ),
     );

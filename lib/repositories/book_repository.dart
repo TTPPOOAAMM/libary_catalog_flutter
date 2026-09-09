@@ -11,4 +11,5 @@ abstract interface class BookRepository {
   Future<void> hardDelete(int id);
   Future<void> restore(int id);
   Future<int> deleteMany(List<int> ids);
+  Future<bool> isIsbnUnique(String isbn, {int? excludeId});
 }

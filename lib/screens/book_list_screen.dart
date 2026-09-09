@@ -73,80 +73,102 @@ class _BookListScreenState extends State<BookListScreen> {
         title: const Text('Каталог книг'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.people),
+            icon: const Icon(Icons.add),
+            tooltip: 'Добавить книгу',
+            onPressed: () => context.go('/books/new'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.people_alt_outlined),
             tooltip: 'Авторы',
             onPressed: () => context.go('/authors'),
           ),
           IconButton(
+            icon: const Icon(Icons.business_outlined),
+            tooltip: 'Издательства',
+            onPressed: () => context.go('/publishers'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.badge_outlined),
+            tooltip: 'Читатели',
+            onPressed: () => context.go('/readers'),
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Обновить',
             onPressed: () => notifier.load(),
           ),
         ],
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                SizedBox(
-                  width: 250,
-                  child: DebounceSearchField(
-                    initialValue: query.search,
-                    hintText: 'Поиск по названию, ISBN...',
-                    onChanged: (val) => _updateUrl(query.copyWith(search: val)),
-                  ),
-                ),
-                DropdownButton<int?>(
-                  value: query.genreId,
-                  hint: const Text('Все жанры'),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('Все жанры')),
-                    DropdownMenuItem(value: 1, child: Text('Роман')),
-                    DropdownMenuItem(value: 2, child: Text('Фантастика')),
-                    DropdownMenuItem(value: 3, child: Text('Детектив')),
-                    DropdownMenuItem(value: 4, child: Text('Научпоп')),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  runSpacing: 12,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 250,
+                      child: DebounceSearchField(
+                        initialValue: query.search,
+                        hintText: 'Поиск по названию, ISBN...',
+                        onChanged: (val) => _updateUrl(query.copyWith(search: val)),
+                      ),
+                    ),
+                    DropdownButton<int?>(
+                      value: query.genreId,
+                      hint: const Text('Все жанры'),
+                      items: const [
+                        DropdownMenuItem(value: null, child: Text('Все жанры')),
+                        DropdownMenuItem(value: 1, child: Text('Роман')),
+                        DropdownMenuItem(value: 2, child: Text('Фантастика')),
+                        DropdownMenuItem(value: 3, child: Text('Детектив')),
+                        DropdownMenuItem(value: 4, child: Text('Научпоп')),
+                      ],
+                      onChanged: (val) => _updateUrl(query.copyWith(genreId: val)),
+                    ),
+                    DropdownButton<int?>(
+                      value: query.publisherId,
+                      hint: const Text('Все изд-ва'),
+                      items: const [
+                        DropdownMenuItem(value: null, child: Text('Все изд-ва')),
+                        DropdownMenuItem(value: 1, child: Text('Азбука')),
+                        DropdownMenuItem(value: 2, child: Text('АСТ')),
+                        DropdownMenuItem(value: 3, child: Text('Эксмо')),
+                      ],
+                      onChanged: (val) => _updateUrl(query.copyWith(publisherId: val)),
+                    ),
+                    SizedBox(
+                      width: 90,
+                      child: TextField(
+                        decoration: const InputDecoration(labelText: 'Год от', isDense: true),
+                        keyboardType: TextInputType.number,
+                        controller: TextEditingController(text: query.yearFrom?.toString() ?? ''),
+                        onSubmitted: (v) => _updateUrl(query.copyWith(yearFrom: int.tryParse(v))),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 90,
+                      child: TextField(
+                        decoration: const InputDecoration(labelText: 'Год до', isDense: true),
+                        keyboardType: TextInputType.number,
+                        controller: TextEditingController(text: query.yearTo?.toString() ?? ''),
+                        onSubmitted: (v) => _updateUrl(query.copyWith(yearTo: int.tryParse(v))),
+                      ),
+                    ),
+                    FilterChip(
+                      label: const Text('Показать удалённые'),
+                      selected: query.includeDeleted,
+                      onSelected: (val) => _updateUrl(query.copyWith(includeDeleted: val)),
+                    ),
                   ],
-                  onChanged: (val) => _updateUrl(query.copyWith(genreId: val)),
                 ),
-                DropdownButton<int?>(
-                  value: query.publisherId,
-                  hint: const Text('Все изд-ва'),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('Все изд-ва')),
-                    DropdownMenuItem(value: 1, child: Text('Издательство А')),
-                    DropdownMenuItem(value: 2, child: Text('Издательство Б')),
-                    DropdownMenuItem(value: 3, child: Text('Издательство В')),
-                  ],
-                  onChanged: (val) => _updateUrl(query.copyWith(publisherId: val)),
-                ),
-                SizedBox(
-                  width: 90,
-                  child: TextField(
-                    decoration: const InputDecoration(labelText: 'Год от', isDense: true),
-                    keyboardType: TextInputType.number,
-                    controller: TextEditingController(text: query.yearFrom?.toString() ?? ''),
-                    onSubmitted: (v) => _updateUrl(query.copyWith(yearFrom: int.tryParse(v))),
-                  ),
-                ),
-                SizedBox(
-                  width: 90,
-                  child: TextField(
-                    decoration: const InputDecoration(labelText: 'Год до', isDense: true),
-                    keyboardType: TextInputType.number,
-                    controller: TextEditingController(text: query.yearTo?.toString() ?? ''),
-                    onSubmitted: (v) => _updateUrl(query.copyWith(yearTo: int.tryParse(v))),
-                  ),
-                ),
-                FilterChip(
-                  label: const Text('Показать удалённые'),
-                  selected: query.includeDeleted,
-                  onSelected: (val) => _updateUrl(query.copyWith(includeDeleted: val)),
-                ),
-              ],
+              ),
             ),
           ),
           if (notifier.hasSelection)
@@ -249,6 +271,11 @@ class _BookListScreenState extends State<BookListScreen> {
             ),
           ],
           actions: (b) => [
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Редактировать',
+              onPressed: () => context.go('/books/${b.id}/edit'),
+            ),
             if (b.isDeleted)
               IconButton(
                 icon: const Icon(Icons.restore, color: Colors.green),

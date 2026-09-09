@@ -50,43 +50,58 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
         title: const Text('Список авторов'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'В каталог книг',
           onPressed: () => context.go('/books'),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Обновить',
+            onPressed: () => notifier.load(),
+          ),
+        ],
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                SizedBox(
-                  width: 250,
-                  child: DebounceSearchField(
-                    initialValue: query.search,
-                    hintText: 'Поиск по фамилии, стране...',
-                    onChanged: (v) => _updateUrl(query.copyWith(search: v)),
-                  ),
-                ),
-                DropdownButton<String?>(
-                  value: query.country,
-                  hint: const Text('Все страны'),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('Все страны')),
-                    DropdownMenuItem(value: 'Россия', child: Text('Россия')),
-                    DropdownMenuItem(value: 'Великобритания', child: Text('Великобритания')),
-                    DropdownMenuItem(value: 'США', child: Text('США')),
-                    DropdownMenuItem(value: 'Франция', child: Text('Франция')),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  runSpacing: 12,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 250,
+                      child: DebounceSearchField(
+                        initialValue: query.search,
+                        hintText: 'Поиск по фамилии, стране...',
+                        onChanged: (v) => _updateUrl(query.copyWith(search: v)),
+                      ),
+                    ),
+                    DropdownButton<String?>(
+                      value: query.country,
+                      hint: const Text('Все страны'),
+                      items: const [
+                        DropdownMenuItem(value: null, child: Text('Все страны')),
+                        DropdownMenuItem(value: 'Россия', child: Text('Россия')),
+                        DropdownMenuItem(value: 'Великобритания', child: Text('Великобритания')),
+                        DropdownMenuItem(value: 'США', child: Text('США')),
+                        DropdownMenuItem(value: 'Франция', child: Text('Франция')),
+                      ],
+                      onChanged: (v) => _updateUrl(query.copyWith(country: v)),
+                    ),
+                    FilterChip(
+                      label: const Text('Показать удалённых'),
+                      selected: query.includeDeleted,
+                      onSelected: (v) => _updateUrl(query.copyWith(includeDeleted: v)),
+                    ),
                   ],
-                  onChanged: (v) => _updateUrl(query.copyWith(country: v)),
                 ),
-                FilterChip(
-                  label: const Text('Показать удалённых'),
-                  selected: query.includeDeleted,
-                  onSelected: (v) => _updateUrl(query.copyWith(includeDeleted: v)),
-                ),
-              ],
+              ),
             ),
           ),
           if (notifier.hasSelection)
