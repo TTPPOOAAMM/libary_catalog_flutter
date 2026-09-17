@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../core/api_exceptions.dart';
 import '../models/book.dart';
 import '../models/book_query.dart';
 import '../models/page_result.dart';
@@ -31,7 +32,10 @@ class BookListNotifier extends ChangeNotifier {
       _result = await _repository.find(_query);
       _status = LoadStatus.success;
     } catch (e) {
-      _error = 'Не удалось загрузить книги: $e';
+      if (e is NetworkException && e.message.contains('отменён')) {
+        return;
+      }
+      _error = e.toString();
       _status = LoadStatus.error;
     }
     notifyListeners();

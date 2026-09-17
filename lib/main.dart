@@ -1,13 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/api_client.dart';
+import 'repositories/api_book_repository.dart';
 import 'repositories/author_repository.dart';
 import 'repositories/book_repository.dart';
+import 'repositories/cached_repositories.dart';
+import 'repositories/api_repositories.dart';
 import 'repositories/genre_repository.dart';
-import 'repositories/persistent_repositories.dart';
 import 'repositories/publisher_repository.dart';
 import 'repositories/reader_repository.dart';
 import 'screens/author_detail_screen.dart';
@@ -27,14 +30,14 @@ import 'state/reader_list_notifier.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
-  final prefs = await SharedPreferences.getInstance();
 
-  late final PersistentBookRepository bookRepo;
-  final pubRepo = PersistentPublisherRepository(prefs, () => bookRepo);
-  bookRepo = PersistentBookRepository(prefs);
-  final autRepo = PersistentAuthorRepository(prefs);
-  final genRepo = PersistentGenreRepository(prefs);
-  final readRepo = PersistentReaderRepository(prefs);
+  final dio = buildDio();
+  final bookRepo = ApiBookRepository(dio);
+
+  final cachedPubRepo = CachedPublisherRepository(ApiPublisherRepository(dio));
+  final cachedAutRepo = CachedAuthorRepository(ApiAuthorRepository(dio));
+  final cachedGenRepo = CachedGenreRepository(ApiGenreRepository(dio));
+  final readRepo = ApiReaderRepository(dio);
 
   final router = GoRouter(
     initialLocation: '/books',
@@ -89,15 +92,16 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        Provider<Dio>.value(value: dio),
         Provider<BookRepository>.value(value: bookRepo),
-        Provider<PublisherRepository>.value(value: pubRepo),
-        Provider<AuthorRepository>.value(value: autRepo),
-        Provider<GenreRepository>.value(value: genRepo),
+        Provider<PublisherRepository>.value(value: cachedPubRepo),
+        Provider<AuthorRepository>.value(value: cachedAutRepo),
+        Provider<GenreRepository>.value(value: cachedGenRepo),
         Provider<ReaderRepository>.value(value: readRepo),
         ChangeNotifierProvider(create: (ctx) => BookListNotifier(bookRepo)),
-        ChangeNotifierProvider(create: (ctx) => AuthorListNotifier(autRepo)),
-        ChangeNotifierProvider(create: (ctx) => PublisherListNotifier(pubRepo)),
-        ChangeNotifierProvider(create: (ctx) => GenreListNotifier(genRepo)),
+        ChangeNotifierProvider(create: (ctx) => AuthorListNotifier(cachedAutRepo)),
+        ChangeNotifierProvider(create: (ctx) => PublisherListNotifier(cachedPubRepo)),
+        ChangeNotifierProvider(create: (ctx) => GenreListNotifier(cachedGenRepo)),
         ChangeNotifierProvider(create: (ctx) => ReaderListNotifier(readRepo)),
       ],
       child: MaterialApp.router(

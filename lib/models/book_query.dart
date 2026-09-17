@@ -51,6 +51,18 @@ class BookQuery {
     );
   }
 
+  Map<String, dynamic> toApiParams() => {
+        if (search.trim().isNotEmpty) 'search': search.trim(),
+        if (genreId != null) 'genreId': genreId,
+        if (publisherId != null) 'publisherId': publisherId,
+        if (yearFrom != null) 'yearFrom': yearFrom,
+        if (yearTo != null) 'yearTo': yearTo,
+        'sort': '$sortField,${sortAscending ? 'asc' : 'desc'}',
+        'page': page,
+        'size': size,
+        if (includeDeleted) 'includeDeleted': true,
+      };
+
   Map<String, String> toQueryParams() {
     final params = <String, String>{};
     if (search.isNotEmpty) params['search'] = search;
@@ -88,34 +100,4 @@ class BookQuery {
       includeDeleted: params['includeDeleted'] == 'true',
     );
   }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is BookQuery &&
-          runtimeType == other.runtimeType &&
-          search == other.search &&
-          genreId == other.genreId &&
-          publisherId == other.publisherId &&
-          yearFrom == other.yearFrom &&
-          yearTo == other.yearTo &&
-          sortField == other.sortField &&
-          sortAscending == other.sortAscending &&
-          page == other.page &&
-          size == other.size &&
-          includeDeleted == other.includeDeleted;
-
-  @override
-  int get hashCode => Object.hash(
-        search,
-        genreId,
-        publisherId,
-        yearFrom,
-        yearTo,
-        sortField,
-        sortAscending,
-        page,
-        size,
-        includeDeleted,
-      );
 }
