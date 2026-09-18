@@ -54,3 +54,25 @@ class V {
     };
   }
 }
+
+class PasswordStrength {
+  final bool hasMinLength;
+  final bool hasDigit;
+  final bool hasSpecialChar;
+
+  const PasswordStrength({
+    required this.hasMinLength,
+    required this.hasDigit,
+    required this.hasSpecialChar,
+  });
+
+  bool get isValid => hasMinLength && hasDigit && hasSpecialChar;
+
+  factory PasswordStrength.evaluate(String password) {
+    return PasswordStrength(
+      hasMinLength: password.length >= 8,
+      hasDigit: RegExp(r'\d').hasMatch(password),
+      hasSpecialChar: RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]').hasMatch(password),
+    );
+  }
+}

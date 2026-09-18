@@ -7,6 +7,8 @@ import '../state/book_list_notifier.dart';
 import '../widgets/debounce_search_field.dart';
 import '../widgets/entity_table.dart';
 import '../widgets/pagination_bar.dart';
+import '../core/permissions.dart';
+import '../state/auth_notifier.dart';
 
 class BookListScreen extends StatefulWidget {
   final Map<String, String> queryParams;
@@ -68,34 +70,80 @@ class _BookListScreenState extends State<BookListScreen> {
     final notifier = context.watch<BookListNotifier>();
     final query = notifier.query;
 
+    final auth = context.watch<AuthNotifier>();
+    final currentUser = auth.currentUser;
+    final currentRole = auth.currentRole;
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Каталог книг'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Каталог книг'),
+            if (currentUser != null)
+              Text(
+                '${currentUser.fullName} (${currentRole.label})',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+              ),
+          ],
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Добавить книгу',
-            onPressed: () => context.go('/books/new'),
-          ),
+          if (AppPermissions.canManageBooks(currentRole))
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Добавить книгу',
+              onPressed: () => context.go('/books/new'),
+            ),
           IconButton(
             icon: const Icon(Icons.people_alt_outlined),
             tooltip: 'Авторы',
             onPressed: () => context.go('/authors'),
           ),
-          IconButton(
-            icon: const Icon(Icons.business_outlined),
-            tooltip: 'Издательства',
-            onPressed: () => context.go('/publishers'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.badge_outlined),
-            tooltip: 'Читатели',
-            onPressed: () => context.go('/readers'),
-          ),
+          if (AppPermissions.canManageCatalogs(currentRole))
+            IconButton(
+              icon: const Icon(Icons.category_outlined),
+              tooltip: 'Жанры',
+              onPressed: () => context.go('/genres'),
+            ),
+          if (AppPermissions.canManageCatalogs(currentRole))
+            IconButton(
+              icon: const Icon(Icons.business_outlined),
+              tooltip: 'Издательства',
+              onPressed: () => context.go('/publishers'),
+            ),
+          if (AppPermissions.canManageReaders(currentRole))
+            IconButton(
+              icon: const Icon(Icons.badge_outlined),
+              tooltip: 'Читатели',
+              onPressed: () => context.go('/readers'),
+            ),
+          if (AppPermissions.canManageLoans(currentRole))
+            IconButton(
+              icon: const Icon(Icons.assignment_outlined),
+              tooltip: 'Выдачи книг',
+              onPressed: () => context.go('/loans'),
+            ),
+          if (AppPermissions.canViewMyLoans(currentRole))
+            IconButton(
+              icon: const Icon(Icons.bookmark_outline),
+              tooltip: 'Мои книги',
+              onPressed: () => context.go('/my-loans'),
+            ),
+          if (AppPermissions.canManageUsers(currentRole))
+            IconButton(
+              icon: const Icon(Icons.admin_panel_settings_outlined),
+              tooltip: 'Пользователи',
+              onPressed: () => context.go('/users'),
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Обновить',
             onPressed: () => notifier.load(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Выйти',
+            onPressed: () => context.read<AuthNotifier>().logout(),
           ),
         ],
       ),

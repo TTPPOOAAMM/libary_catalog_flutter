@@ -17,7 +17,11 @@ class CachedAuthorRepository implements AuthorRepository {
 
   @override
   Future<List<Author>> findAll() async {
-    _cache ??= await _inner.findAll();
+    if (_cache == null || _cache!.isEmpty) {
+      final items = await _inner.findAll();
+      if (items.isNotEmpty) _cache = items;
+      return items;
+    }
     return _cache!;
   }
 
@@ -57,6 +61,7 @@ class CachedAuthorRepository implements AuthorRepository {
     invalidate();
     return _inner.deleteMany(ids);
   }
+  
 }
 
 class CachedGenreRepository implements GenreRepository {

@@ -15,7 +15,12 @@ class Author {
     this.deletedAt,
   });
 
-  String get fullName => '$firstName $lastName';
+  String get fullName {
+    final combined = '$firstName $lastName'.trim();
+    if (combined.isNotEmpty) return combined;
+    return 'Автор #$id';
+  }
+
   bool get isDeleted => deletedAt != null;
 
   Author copyWith({
@@ -40,17 +45,37 @@ class Author {
         'id': id,
         'firstName': firstName,
         'lastName': lastName,
+        'fullName': fullName,
         'country': country,
         'birthYear': birthYear,
-        'deletedAt': deletedAt?.toIso8601String(),
+        if (deletedAt != null) 'deletedAt': deletedAt!.toIso8601String(),
       };
 
-  factory Author.fromJson(Map<String, dynamic> json) => Author(
-        id: json['id'] as int? ?? 0,
-        firstName: json['firstName'] as String? ?? '',
-        lastName: json['lastName'] as String? ?? '',
-        country: json['country'] as String? ?? '',
-        birthYear: json['birthYear'] as int? ?? 0,
-        deletedAt: json['deletedAt'] == null ? null : DateTime.tryParse(json['deletedAt'] as String),
-      );
+  factory Author.fromJson(Map<String, dynamic> json) {
+    String first = (json['firstName'] as String?)?.trim() ?? '';
+    String last = (json['lastName'] as String?)?.trim() ?? '';
+    final full = (json['fullName'] as String?)?.trim() ?? (json['name'] as String?)?.trim();
+
+    // Если сервер прислал единое fullName вместо firstName и lastName
+    if (first.isEmpty && last.isEmpty && full != null && full.isNotEmpty) {
+      final parts = full.split(RegExp(r'\s+'));
+      if (parts.length > 1) {
+        first = parts.first;
+        last = parts.sublist(1).join(' ');
+      } else {
+        last = full;
+      }
+    }
+
+    return Author(
+      id: json['id'] as int? ?? 0,
+      firstName: first,
+      lastName: last,
+      country: json['country'] as String? ?? '',
+      birthYear: json['birthYear'] as int? ?? 0,
+      deletedAt: json['deletedAt'] == null
+          ? null
+          : DateTime.tryParse(json['deletedAt'] as String),
+    );
+  }
 }

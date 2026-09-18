@@ -14,6 +14,23 @@ import 'genre_repository.dart';
 import 'publisher_repository.dart';
 import 'reader_repository.dart';
 
+List<Map<String, dynamic>> _extractItems(dynamic rawData) {
+  List list = const [];
+  if (rawData is List) {
+    list = rawData;
+  } else if (rawData is Map) {
+    if (rawData['items'] is List) {
+      list = rawData['items'] as List;
+    } else if (rawData['data'] is List) {
+      list = rawData['data'] as List;
+    }
+  }
+  return list
+      .whereType<Map>()
+      .map((m) => Map<String, dynamic>.from(m))
+      .toList();
+}
+
 class ApiAuthorRepository implements AuthorRepository {
   final Dio _dio;
   ApiAuthorRepository(this._dio);
@@ -21,43 +38,44 @@ class ApiAuthorRepository implements AuthorRepository {
   @override
   Future<List<Author>> findAll() => guard(() async {
         final res = await _dio.get('/authors', queryParameters: {'size': 100});
-        final data = res.data as Map<String, dynamic>;
-        final items = (data['items'] as List?) ?? const [];
-        return items.whereType<Map<String, dynamic>>().map(Author.fromJson).toList();
+        final list = _extractItems(res.data);
+        return list.map(Author.fromJson).toList();
       });
 
   @override
   Future<PageResult<Author>> find(AuthorQuery q) => guard(() async {
         final res = await _dio.get('/authors', queryParameters: q.toQueryParams());
-        final data = res.data as Map<String, dynamic>;
-        final items = ((data['items'] as List?) ?? const [])
-            .whereType<Map<String, dynamic>>()
-            .map(Author.fromJson)
-            .toList();
-        return PageResult(
-          items: items,
-          page: data['page'] as int? ?? q.page,
-          size: data['size'] as int? ?? q.size,
-          total: data['total'] as int? ?? items.length,
-        );
+        final list = _extractItems(res.data);
+        final items = list.map(Author.fromJson).toList();
+        final rawData = res.data;
+        int page = q.page;
+        int size = q.size;
+        int total = items.length;
+        if (rawData is Map) {
+          page = rawData['page'] as int? ?? page;
+          size = rawData['size'] as int? ?? size;
+          total = rawData['total'] as int? ?? total;
+        }
+        return PageResult(items: items, page: page, size: size, total: total);
       });
 
   @override
   Future<Author?> findById(int id) => guard(() async {
         final res = await _dio.get('/authors/$id');
-        return res.data != null ? Author.fromJson(res.data as Map<String, dynamic>) : null;
+        final raw = res.data;
+        return raw is Map ? Author.fromJson(Map<String, dynamic>.from(raw)) : null;
       });
 
   @override
   Future<Author> create(Author a) => guard(() async {
         final res = await _dio.post('/authors', data: a.toJson());
-        return Author.fromJson(res.data as Map<String, dynamic>);
+        return Author.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
   Future<Author> update(Author a) => guard(() async {
         final res = await _dio.put('/authors/${a.id}', data: a.toJson());
-        return Author.fromJson(res.data as Map<String, dynamic>);
+        return Author.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
@@ -72,7 +90,8 @@ class ApiAuthorRepository implements AuthorRepository {
   @override
   Future<int> deleteMany(List<int> ids) => guard(() async {
         final res = await _dio.post('/authors/bulk-delete', data: {'ids': ids});
-        return (res.data as Map<String, dynamic>)['deleted'] as int? ?? ids.length;
+        final data = res.data;
+        return (data is Map && data['deleted'] is int) ? data['deleted'] as int : ids.length;
       });
 }
 
@@ -83,43 +102,44 @@ class ApiGenreRepository implements GenreRepository {
   @override
   Future<List<Genre>> findAll() => guard(() async {
         final res = await _dio.get('/genres', queryParameters: {'size': 100});
-        final data = res.data as Map<String, dynamic>;
-        final items = (data['items'] as List?) ?? const [];
-        return items.whereType<Map<String, dynamic>>().map(Genre.fromJson).toList();
+        final list = _extractItems(res.data);
+        return list.map(Genre.fromJson).toList();
       });
 
   @override
   Future<PageResult<Genre>> find(GenreQuery q) => guard(() async {
         final res = await _dio.get('/genres', queryParameters: q.toQueryParams());
-        final data = res.data as Map<String, dynamic>;
-        final items = ((data['items'] as List?) ?? const [])
-            .whereType<Map<String, dynamic>>()
-            .map(Genre.fromJson)
-            .toList();
-        return PageResult(
-          items: items,
-          page: data['page'] as int? ?? q.page,
-          size: data['size'] as int? ?? q.size,
-          total: data['total'] as int? ?? items.length,
-        );
+        final list = _extractItems(res.data);
+        final items = list.map(Genre.fromJson).toList();
+        final rawData = res.data;
+        int page = q.page;
+        int size = q.size;
+        int total = items.length;
+        if (rawData is Map) {
+          page = rawData['page'] as int? ?? page;
+          size = rawData['size'] as int? ?? size;
+          total = rawData['total'] as int? ?? total;
+        }
+        return PageResult(items: items, page: page, size: size, total: total);
       });
 
   @override
   Future<Genre?> findById(int id) => guard(() async {
         final res = await _dio.get('/genres/$id');
-        return res.data != null ? Genre.fromJson(res.data as Map<String, dynamic>) : null;
+        final raw = res.data;
+        return raw is Map ? Genre.fromJson(Map<String, dynamic>.from(raw)) : null;
       });
 
   @override
   Future<Genre> create(Genre g) => guard(() async {
         final res = await _dio.post('/genres', data: g.toJson());
-        return Genre.fromJson(res.data as Map<String, dynamic>);
+        return Genre.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
   Future<Genre> update(Genre g) => guard(() async {
         final res = await _dio.put('/genres/${g.id}', data: g.toJson());
-        return Genre.fromJson(res.data as Map<String, dynamic>);
+        return Genre.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
@@ -134,7 +154,8 @@ class ApiGenreRepository implements GenreRepository {
   @override
   Future<int> deleteMany(List<int> ids) => guard(() async {
         final res = await _dio.post('/genres/bulk-delete', data: {'ids': ids});
-        return (res.data as Map<String, dynamic>)['deleted'] as int? ?? ids.length;
+        final data = res.data;
+        return (data is Map && data['deleted'] is int) ? data['deleted'] as int : ids.length;
       });
 }
 
@@ -145,50 +166,51 @@ class ApiPublisherRepository implements PublisherRepository {
   @override
   Future<List<Publisher>> findAll() => guard(() async {
         final res = await _dio.get('/publishers', queryParameters: {'size': 100});
-        final data = res.data as Map<String, dynamic>;
-        final items = (data['items'] as List?) ?? const [];
-        return items.whereType<Map<String, dynamic>>().map(Publisher.fromJson).toList();
+        final list = _extractItems(res.data);
+        return list.map(Publisher.fromJson).toList();
       });
 
   @override
   Future<int> countBooksReferencing(int publisherId) => guard(() async {
         final res = await _dio.get('/books', queryParameters: {'publisherId': publisherId, 'size': 1});
-        final data = res.data as Map<String, dynamic>;
-        return data['total'] as int? ?? 0;
+        final data = res.data;
+        return (data is Map && data['total'] is int) ? data['total'] as int : 0;
       });
 
   @override
   Future<PageResult<Publisher>> find(PublisherQuery q) => guard(() async {
         final res = await _dio.get('/publishers', queryParameters: q.toQueryParams());
-        final data = res.data as Map<String, dynamic>;
-        final items = ((data['items'] as List?) ?? const [])
-            .whereType<Map<String, dynamic>>()
-            .map(Publisher.fromJson)
-            .toList();
-        return PageResult(
-          items: items,
-          page: data['page'] as int? ?? q.page,
-          size: data['size'] as int? ?? q.size,
-          total: data['total'] as int? ?? items.length,
-        );
+        final list = _extractItems(res.data);
+        final items = list.map(Publisher.fromJson).toList();
+        final rawData = res.data;
+        int page = q.page;
+        int size = q.size;
+        int total = items.length;
+        if (rawData is Map) {
+          page = rawData['page'] as int? ?? page;
+          size = rawData['size'] as int? ?? size;
+          total = rawData['total'] as int? ?? total;
+        }
+        return PageResult(items: items, page: page, size: size, total: total);
       });
 
   @override
   Future<Publisher?> findById(int id) => guard(() async {
         final res = await _dio.get('/publishers/$id');
-        return res.data != null ? Publisher.fromJson(res.data as Map<String, dynamic>) : null;
+        final raw = res.data;
+        return raw is Map ? Publisher.fromJson(Map<String, dynamic>.from(raw)) : null;
       });
 
   @override
   Future<Publisher> create(Publisher p) => guard(() async {
         final res = await _dio.post('/publishers', data: p.toJson());
-        return Publisher.fromJson(res.data as Map<String, dynamic>);
+        return Publisher.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
   Future<Publisher> update(Publisher p) => guard(() async {
         final res = await _dio.put('/publishers/${p.id}', data: p.toJson());
-        return Publisher.fromJson(res.data as Map<String, dynamic>);
+        return Publisher.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
@@ -203,7 +225,8 @@ class ApiPublisherRepository implements PublisherRepository {
   @override
   Future<int> deleteMany(List<int> ids) => guard(() async {
         final res = await _dio.post('/publishers/bulk-delete', data: {'ids': ids});
-        return (res.data as Map<String, dynamic>)['deleted'] as int? ?? ids.length;
+        final data = res.data;
+        return (data is Map && data['deleted'] is int) ? data['deleted'] as int : ids.length;
       });
 }
 
@@ -224,35 +247,37 @@ class ApiReaderRepository implements ReaderRepository {
   @override
   Future<PageResult<Reader>> find(ReaderQuery q) => guard(() async {
         final res = await _dio.get('/readers', queryParameters: q.toQueryParams());
-        final data = res.data as Map<String, dynamic>;
-        final items = ((data['items'] as List?) ?? const [])
-            .whereType<Map<String, dynamic>>()
-            .map(Reader.fromJson)
-            .toList();
-        return PageResult(
-          items: items,
-          page: data['page'] as int? ?? q.page,
-          size: data['size'] as int? ?? q.size,
-          total: data['total'] as int? ?? items.length,
-        );
+        final list = _extractItems(res.data);
+        final items = list.map(Reader.fromJson).toList();
+        final rawData = res.data;
+        int page = q.page;
+        int size = q.size;
+        int total = items.length;
+        if (rawData is Map) {
+          page = rawData['page'] as int? ?? page;
+          size = rawData['size'] as int? ?? size;
+          total = rawData['total'] as int? ?? total;
+        }
+        return PageResult(items: items, page: page, size: size, total: total);
       });
 
   @override
   Future<Reader?> findById(int id) => guard(() async {
         final res = await _dio.get('/readers/$id');
-        return res.data != null ? Reader.fromJson(res.data as Map<String, dynamic>) : null;
+        final raw = res.data;
+        return raw is Map ? Reader.fromJson(Map<String, dynamic>.from(raw)) : null;
       });
 
   @override
   Future<Reader> create(Reader r) => guard(() async {
         final res = await _dio.post('/readers', data: r.toJson());
-        return Reader.fromJson(res.data as Map<String, dynamic>);
+        return Reader.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
   Future<Reader> update(Reader r) => guard(() async {
         final res = await _dio.put('/readers/${r.id}', data: r.toJson());
-        return Reader.fromJson(res.data as Map<String, dynamic>);
+        return Reader.fromJson(Map<String, dynamic>.from(res.data as Map));
       });
 
   @override
@@ -267,6 +292,7 @@ class ApiReaderRepository implements ReaderRepository {
   @override
   Future<int> deleteMany(List<int> ids) => guard(() async {
         final res = await _dio.post('/readers/bulk-delete', data: {'ids': ids});
-        return (res.data as Map<String, dynamic>)['deleted'] as int? ?? ids.length;
+        final data = res.data;
+        return (data is Map && data['deleted'] is int) ? data['deleted'] as int : ids.length;
       });
 }
