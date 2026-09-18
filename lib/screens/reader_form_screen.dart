@@ -35,7 +35,8 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
 
   Future<void> _loadReader() async {
     if (widget.id != null) {
-      final reader = await context.read<ReaderRepository>().findById(widget.id!);
+      final reader =
+          await context.read<ReaderRepository>().findById(widget.id!);
       if (reader != null) {
         _nameController.text = reader.fullName;
         _emailController.text = reader.email;
@@ -45,7 +46,8 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
         _cardActive = reader.card.isActive;
       }
     } else {
-      _cardNumberController.text = 'LC-${DateTime.now().millisecondsSinceEpoch % 10000}';
+      _cardNumberController.text =
+          'LC-${DateTime.now().millisecondsSinceEpoch % 10000}';
     }
     if (mounted) setState(() => _isLoading = false);
   }
@@ -68,9 +70,11 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final repo = context.read<ReaderRepository>();
-    final unique = await repo.isEmailUnique(_emailController.text.trim(), excludeId: widget.id);
+    final unique = await repo.isEmailUnique(_emailController.text.trim(),
+        excludeId: widget.id);
     if (!unique) {
-      setState(() => _emailServerError = 'Читатель с таким адресом уже зарегистрирован');
+      setState(() =>
+          _emailServerError = 'Читатель с таким адресом уже зарегистрирован');
       _formKey.currentState!.validate();
       return;
     }
@@ -100,7 +104,9 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
   @override
   Widget build(BuildContext context) {
     return FormShell(
-      title: widget.id == null ? 'Регистрация читателя' : 'Редактирование читателя #${widget.id}',
+      title: widget.id == null
+          ? 'Регистрация читателя'
+          : 'Редактирование читателя #${widget.id}',
       formKey: _formKey,
       isModified: _isModified,
       isLoading: _isLoading,
@@ -109,7 +115,8 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
       children: [
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(labelText: 'ФИО читателя', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'ФИО читателя', border: OutlineInputBorder()),
           validator: V.combine([V.required(), V.length(min: 3, max: 150)]),
           onChanged: (_) => _markModified(),
         ),
@@ -126,23 +133,27 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
             return V.combine([V.required(), V.email()])(v);
           },
           onChanged: (_) {
-            if (_emailServerError != null) setState(() => _emailServerError = null);
+            if (_emailServerError != null)
+              setState(() => _emailServerError = null);
             _markModified();
           },
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _phoneController,
-          decoration: const InputDecoration(labelText: 'Номер телефона', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Номер телефона', border: OutlineInputBorder()),
           validator: V.combine([V.required(), V.length(min: 6, max: 20)]),
           onChanged: (_) => _markModified(),
         ),
         const SizedBox(height: 24),
-        const Text('Читательский билет (связь 1:1)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const Text('Читательский билет (связь 1:1)',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const Divider(),
         TextFormField(
           controller: _cardNumberController,
-          decoration: const InputDecoration(labelText: 'Номер билета', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Номер билета', border: OutlineInputBorder()),
           validator: V.combine([V.required(), V.length(min: 4, max: 20)]),
           onChanged: (_) => _markModified(),
         ),

@@ -1,7 +1,8 @@
 typedef Validator = String? Function(String?);
 
 class V {
-  static Validator required([String message = 'Поле обязательно для заполнения']) {
+  static Validator required(
+      [String message = 'Поле обязательно для заполнения']) {
     return (value) => (value == null || value.trim().isEmpty) ? message : null;
   }
 
@@ -36,7 +37,8 @@ class V {
   }
 
   static Validator isbn() {
-    final re = RegExp(r'^(?:ISBN(?:-13)?:?\s*)?(?=[0-9]{13}$|(?=(?:[0-9]+[-\s]){4})[-\s0-9]{17}$)97[89][-\s]?[0-9]{1,5}[-\s]?[0-9]+[-\s]?[0-9]+[-\s]?[0-9]$');
+    final re = RegExp(
+        r'^(?:ISBN(?:-13)?:?\s*)?(?=[0-9]{13}$|(?=(?:[0-9]+[-\s]){4})[-\s0-9]{17}$)97[89][-\s]?[0-9]{1,5}[-\s]?[0-9]+[-\s]?[0-9]+[-\s]?[0-9]$');
     return (value) {
       final text = value?.trim() ?? '';
       if (text.isEmpty) return null;
@@ -72,7 +74,8 @@ class PasswordStrength {
     return PasswordStrength(
       hasMinLength: password.length >= 8,
       hasDigit: RegExp(r'\d').hasMatch(password),
-      hasSpecialChar: RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]').hasMatch(password),
+      hasSpecialChar:
+          RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`]').hasMatch(password),
     );
   }
 }

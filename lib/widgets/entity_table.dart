@@ -8,160 +8,211 @@ class TableColumnSpec<T> {
 
   const TableColumnSpec({
     required this.label,
-    required this.build,
     this.sortField,
     this.numeric = false,
+    required this.build,
   });
 }
 
 class EntityTable<T> extends StatelessWidget {
-  final List<TableColumnSpec<T>> columns;
   final List<T> items;
   final int Function(T item) idOf;
   final Set<int> selected;
-  final ValueChanged<int>? onToggleSelect;
-  final ValueChanged<bool?>? onSelectAll;
-  final String? sortField;
+  final void Function(int id) onToggleSelect;
+  final void Function(bool? selectAll) onSelectAll;
+  final String sortField;
   final bool sortAscending;
-  final void Function(String field)? onSort;
+  final void Function(String field) onSort;
+  final List<TableColumnSpec<T>> columns;
   final List<Widget> Function(T item)? actions;
   final void Function(T item)? onTap;
 
   const EntityTable({
     super.key,
-    required this.columns,
     required this.items,
     required this.idOf,
-    this.selected = const {},
-    this.onToggleSelect,
-    this.onSelectAll,
-    this.sortField,
-    this.sortAscending = true,
-    this.onSort,
+    required this.selected,
+    required this.onToggleSelect,
+    required this.onSelectAll,
+    required this.sortField,
+    required this.sortAscending,
+    required this.onSort,
+    required this.columns,
     this.actions,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Text('Данные отсутствуют',
+              style: TextStyle(color: Colors.grey, fontSize: 16)),
+        ),
+      );
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 600) {
-          return _buildMobileCards(context);
+        // На экранах < 768 px показываем адаптивные карточки
+        if (constraints.maxWidth < 768) {
+          return ListView.builder(
+            padding: const EdgeInsets.all(8),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              final id = idOf(item);
+              final isChecked = selected.contains(id);
+
+              return Card(
+                elevation: 1,
+                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: onTap != null ? () => onTap!(item) : null,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: isChecked,
+                              onChanged: (_) => onToggleSelect(id),
+                            ),
+                            Expanded(
+                              child: DefaultTextStyle(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                child: columns.first.build(item),
+                              ),
+                            ),
+                            if (actions != null)
+                              Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: actions!(item)),
+                          ],
+                        ),
+                        const Divider(height: 12),
+                        ...columns.skip(1).map(
+                              (col) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 3),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 110,
+                                      child: Text(
+                                        '${col.label}:',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                            color: Colors.grey),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: DefaultTextStyle(
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        child: col.build(item),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
         }
-        return _buildDesktopTable(context);
-      },
-    );
-  }
 
-  Widget _buildMobileCards(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        final id = idOf(item);
-        final isSelected = selected.contains(id);
+        // На десктопе (>= 768 px) - двумерная таблица
+        final allSelected = selected.length == items.length && items.isNotEmpty;
 
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (onToggleSelect != null)
-                      Checkbox(
-                        value: isSelected,
-                        onChanged: (_) => onToggleSelect!(id),
-                      ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: onTap != null ? () => onTap!(item) : null,
-                        child: columns.first.build(item),
+        return Scrollbar(
+          thumbVisibility: true,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                child: DataTable(
+                  columns: [
+                    DataColumn(
+                      label: Checkbox(
+                        value: allSelected,
+                        onChanged: onSelectAll,
                       ),
                     ),
-                    if (actions != null) Row(mainAxisSize: MainAxisSize.min, children: actions!(item)),
-                  ],
-                ),
-                const Divider(),
-                ...columns.skip(1).map((col) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(col.label, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                          col.build(item),
-                        ],
+                    ...columns.map(
+                      (col) => DataColumn(
+                        label: Text(col.label,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        numeric: col.numeric,
+                        onSort: col.sortField != null
+                            ? (_, __) => onSort(col.sortField!)
+                            : null,
                       ),
-                    )),
-              ],
+                    ),
+                    if (actions != null)
+                      const DataColumn(label: Text('Действия')),
+                  ],
+                  rows: items.map((item) {
+                    final id = idOf(item);
+                    return DataRow(
+                      selected: selected.contains(id),
+                      cells: [
+                        DataCell(
+                          Checkbox(
+                            value: selected.contains(id),
+                            onChanged: (_) => onToggleSelect(id),
+                          ),
+                        ),
+                        ...columns.map(
+                          (col) => DataCell(
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 320),
+                              child: DefaultTextStyle(
+                                style: Theme.of(context).textTheme.bodyMedium!,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                child: col.build(item),
+                              ),
+                            ),
+                            onTap: onTap != null ? () => onTap!(item) : null,
+                          ),
+                        ),
+                        if (actions != null)
+                          DataCell(Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: actions!(item))),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ),
         );
       },
-    );
-  }
-
-Widget _buildDesktopTable(BuildContext context) {
-    final sortColIndex = sortField != null
-        ? columns.indexWhere((c) => c.sortField == sortField)
-        : -1;
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Center( 
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 800), 
-            child: DataTable(
-              showCheckboxColumn: onToggleSelect != null,
-              sortColumnIndex: sortColIndex != -1 ? sortColIndex : null,
-              sortAscending: sortAscending,
-              onSelectAll: onSelectAll,
-              columns: [
-                ...columns.map((col) {
-                  return DataColumn(
-                    label: Text(col.label),
-                    numeric: col.numeric,
-                    onSort: col.sortField != null && onSort != null
-                        ? (_, __) => onSort!(col.sortField!)
-                        : null,
-                  );
-                }),
-                if (actions != null) const DataColumn(label: Text('Действия')),
-              ],
-              rows: items.map((item) {
-                final id = idOf(item);
-                final isSelected = selected.contains(id);
-
-                return DataRow(
-                  selected: isSelected,
-                  onSelectChanged: onToggleSelect != null
-                      ? (_) => onToggleSelect!(id)
-                      : null,
-                  cells: [
-                    ...columns.map((col) {
-                      return DataCell(
-                        col.build(item),
-                        onTap: onTap != null ? () => onTap!(item) : null,
-                      );
-                    }),
-                    if (actions != null)
-                      DataCell(Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: actions!(item),
-                      )),
-                  ],
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

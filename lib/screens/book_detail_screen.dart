@@ -32,16 +32,19 @@ class BookDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(book.title, style: Theme.of(context).textTheme.headlineMedium),
+                    Text(book.title,
+                        style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 12),
                     Text('ISBN: ${book.isbn}'),
                     Text('Год издания: ${book.year}'),
                     Text('Количество страниц: ${book.pages}'),
                     Text('Издательство: №${book.publisherId}'),
-                    Text('Доступно экземпляров: ${book.copiesAvailable} / ${book.copiesTotal}'),
+                    Text(
+                        'Доступно экземпляров: ${book.copiesAvailable} / ${book.copiesTotal}'),
                     if (book.isDeleted) ...[
                       const SizedBox(height: 8),
-                      Text('Удалена: ${book.deletedAt}', style: const TextStyle(color: Colors.red)),
+                      Text('Удалена: ${book.deletedAt}',
+                          style: const TextStyle(color: Colors.red)),
                     ],
                   ],
                 ),

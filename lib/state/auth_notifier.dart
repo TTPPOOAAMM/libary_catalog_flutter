@@ -55,20 +55,24 @@ class AuthNotifier extends ChangeNotifier {
     final startRaw = _prefs.getInt(_kSessionStart);
     final lastActRaw = _prefs.getInt(_kLastActivity);
 
-    if (access != null && refresh != null && userRaw != null && startRaw != null && lastActRaw != null) {
+    if (access != null &&
+        refresh != null &&
+        userRaw != null &&
+        startRaw != null &&
+        lastActRaw != null) {
       final now = DateTime.now().millisecondsSinceEpoch;
       final sessionStart = startRaw;
       final lastAct = lastActRaw;
 
-      // Проверка абсолютного тайм-аута сессии
-      if (now - sessionStart > SessionConfig.absoluteSessionTimeout.inMilliseconds) {
-        await logout(reason: 'Время вашей сессии истекло (30 мин). Войдите снова.');
+      if (now - sessionStart >
+          SessionConfig.absoluteSessionTimeout.inMilliseconds) {
+        await logout(
+            reason: 'Время вашей сессии истекло (30 мин). Войдите снова.');
         _isInitialized = true;
         notifyListeners();
         return;
       }
 
-      // Проверка тайм-аута неактивности
       if (now - lastAct > SessionConfig.inactivityTimeout.inMilliseconds) {
         await logout(reason: 'Вы были отключены из-за неактивности (3 мин).');
         _isInitialized = true;
@@ -78,8 +82,12 @@ class AuthNotifier extends ChangeNotifier {
 
       try {
         _tokens = AuthTokens(accessToken: access, refreshToken: refresh);
-        _currentUser = User.fromJson(jsonDecode(userRaw) as Map<String, dynamic>);
-        _startTimers(resumeRemainingInactivityMs: SessionConfig.inactivityTimeout.inMilliseconds - (now - lastAct));
+        _currentUser =
+            User.fromJson(jsonDecode(userRaw) as Map<String, dynamic>);
+        _startTimers(
+            resumeRemainingInactivityMs:
+                SessionConfig.inactivityTimeout.inMilliseconds -
+                    (now - lastAct));
       } catch (_) {
         await logout();
       }
@@ -89,7 +97,6 @@ class AuthNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Фиксация пользовательского действия (мышь, клик, клавиатура)
   void recordActivity() {
     if (!isAuthenticated) return;
 
@@ -108,10 +115,11 @@ class AuthNotifier extends ChangeNotifier {
     _warningTicker?.cancel();
     _absoluteSessionTimer?.cancel();
 
-    // 1. Абсолютный таймер
-    final startRaw = _prefs.getInt(_kSessionStart) ?? DateTime.now().millisecondsSinceEpoch;
+    final startRaw =
+        _prefs.getInt(_kSessionStart) ?? DateTime.now().millisecondsSinceEpoch;
     final elapsed = DateTime.now().millisecondsSinceEpoch - startRaw;
-    final remainingAbs = SessionConfig.absoluteSessionTimeout.inMilliseconds - elapsed;
+    final remainingAbs =
+        SessionConfig.absoluteSessionTimeout.inMilliseconds - elapsed;
 
     if (remainingAbs <= 0) {
       logout(reason: 'Превышена максимальная длительность сессии.');
@@ -122,7 +130,6 @@ class AuthNotifier extends ChangeNotifier {
       logout(reason: 'Сессия завершена по истечении 30 минут.');
     });
 
-    // 2. Таймер неактивности
     final timeoutDuration = resumeRemainingInactivityMs != null
         ? Duration(milliseconds: resumeRemainingInactivityMs)
         : SessionConfig.inactivityTimeout;
@@ -209,7 +216,6 @@ class AuthNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Обновление токена доступа через refresh-токен
   Future<String?> refreshAccessToken() async {
     final curRefresh = _tokens?.refreshToken;
     if (curRefresh == null || curRefresh.isEmpty) return null;
@@ -227,8 +233,6 @@ class AuthNotifier extends ChangeNotifier {
     }
   }
 
-  /// Метод для проверки требования пункта 17:
-  /// Имитация подмены роли в UI через DevTools/localStorage без ведома сервера!
   Future<void> simulateDevToolsRoleChange(UserRole spoofedRole) async {
     if (_currentUser == null) return;
     _currentUser = _currentUser!.copyWith(role: spoofedRole);

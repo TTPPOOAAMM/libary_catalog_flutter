@@ -43,7 +43,8 @@ class User {
     return User(
       id: json['id'] as int? ?? 0,
       username: json['username'] as String? ?? '',
-      fullName: json['fullName'] as String? ?? json['username'] as String? ?? '',
+      fullName:
+          json['fullName'] as String? ?? json['username'] as String? ?? '',
       email: json['email'] as String? ?? '',
       role: UserRole.fromString(json['role'] as String?),
     );

@@ -37,14 +37,17 @@ class _MyLoansScreenState extends State<MyLoansScreen> {
       await context.read<LoanRepository>().extendLoan(id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Срок выдачи успешно продлён на 14 дней!')),
+          const SnackBar(
+              content: Text('Срок выдачи успешно продлён на 14 дней!')),
         );
       }
       _load();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Не удалось продлить срок: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('Не удалось продлить срок: $e'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -72,7 +75,8 @@ class _MyLoansScreenState extends State<MyLoansScreen> {
                   itemBuilder: (ctx, i) {
                     final l = _myLoans[i];
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       child: ListTile(
                         leading: const Icon(Icons.bookmark),
                         title: Text(l.bookTitle),

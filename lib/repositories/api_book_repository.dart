@@ -85,7 +85,8 @@ class ApiBookRepository implements BookRepository {
 
   @override
   Future<Book> update(Book book) => guard(() async {
-        final response = await _dio.put('/books/${book.id}', data: book.toApiJson());
+        final response =
+            await _dio.put('/books/${book.id}', data: book.toApiJson());
         return Book.fromJson(response.data as Map<String, dynamic>);
       });
 
@@ -102,7 +103,8 @@ class ApiBookRepository implements BookRepository {
 
   @override
   Future<int> deleteMany(List<int> ids) => guard(() async {
-        final response = await _dio.post('/books/bulk-delete', data: {'ids': ids});
+        final response =
+            await _dio.post('/books/bulk-delete', data: {'ids': ids});
         final data = response.data as Map<String, dynamic>;
         return data['deleted'] as int? ?? ids.length;
       });
@@ -113,7 +115,8 @@ class ApiBookRepository implements BookRepository {
       final res = await find(BookQuery(search: isbn.trim(), size: 5));
       final clean = isbn.replaceAll(RegExp(r'[-\s]'), '');
       return !res.items.any((b) =>
-          b.id != excludeId && b.isbn.replaceAll(RegExp(r'[-\s]'), '') == clean);
+          b.id != excludeId &&
+          b.isbn.replaceAll(RegExp(r'[-\s]'), '') == clean);
     } catch (_) {
       return true;
     }

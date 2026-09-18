@@ -54,9 +54,9 @@ class Author {
   factory Author.fromJson(Map<String, dynamic> json) {
     String first = (json['firstName'] as String?)?.trim() ?? '';
     String last = (json['lastName'] as String?)?.trim() ?? '';
-    final full = (json['fullName'] as String?)?.trim() ?? (json['name'] as String?)?.trim();
+    final full = (json['fullName'] as String?)?.trim() ??
+        (json['name'] as String?)?.trim();
 
-    // Если сервер прислал единое fullName вместо firstName и lastName
     if (first.isEmpty && last.isEmpty && full != null && full.isNotEmpty) {
       final parts = full.split(RegExp(r'\s+'));
       if (parts.length > 1) {

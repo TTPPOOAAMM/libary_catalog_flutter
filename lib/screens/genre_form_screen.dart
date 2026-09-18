@@ -62,14 +62,16 @@ class _GenreFormScreenState extends State<GenreFormScreen> {
       children: [
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(labelText: 'Название жанра', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Название жанра', border: OutlineInputBorder()),
           validator: V.required(),
           onChanged: (_) => setState(() => _isModified = true),
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _descriptionController,
-          decoration: const InputDecoration(labelText: 'Описание', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Описание', border: OutlineInputBorder()),
           maxLines: 3,
           onChanged: (_) => setState(() => _isModified = true),
         ),

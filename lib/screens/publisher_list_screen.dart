@@ -38,7 +38,8 @@ class _PublisherListScreenState extends State<PublisherListScreen> {
   }
 
   void _updateUrl(PublisherQuery next) {
-    context.go(Uri(path: '/publishers', queryParameters: next.toQueryParams()).toString());
+    context.go(Uri(path: '/publishers', queryParameters: next.toQueryParams())
+        .toString());
   }
 
   Future<void> _deletePublisher(BuildContext context, Publisher p) async {
@@ -113,7 +114,8 @@ class _PublisherListScreenState extends State<PublisherListScreen> {
                     FilterChip(
                       label: const Text('Показать удалённые'),
                       selected: query.includeDeleted,
-                      onSelected: (v) => _updateUrl(query.copyWith(includeDeleted: v)),
+                      onSelected: (v) =>
+                          _updateUrl(query.copyWith(includeDeleted: v)),
                     ),
                   ],
                 ),
@@ -122,9 +124,12 @@ class _PublisherListScreenState extends State<PublisherListScreen> {
           ),
           Expanded(
             child: switch (notifier.status) {
-              LoadStatus.loading => const Center(child: CircularProgressIndicator()),
-              LoadStatus.error => Center(child: Text(notifier.error ?? 'Ошибка')),
-              LoadStatus.idle || LoadStatus.success when notifier.result.items.isEmpty =>
+              LoadStatus.loading =>
+                const Center(child: CircularProgressIndicator()),
+              LoadStatus.error =>
+                Center(child: Text(notifier.error ?? 'Ошибка')),
+              LoadStatus.idle ||
+              LoadStatus.success when notifier.result.items.isEmpty =>
                 const Center(child: Text('Издательства не найдены')),
               _ => EntityTable<Publisher>(
                   items: notifier.result.items,
@@ -135,8 +140,11 @@ class _PublisherListScreenState extends State<PublisherListScreen> {
                   sortField: notifier.query.sortField,
                   sortAscending: notifier.query.sortAscending,
                   onSort: (field) {
-                    final asc = field == notifier.query.sortField ? !notifier.query.sortAscending : true;
-                    _updateUrl(notifier.query.copyWith(sortField: field, sortAscending: asc));
+                    final asc = field == notifier.query.sortField
+                        ? !notifier.query.sortAscending
+                        : true;
+                    _updateUrl(notifier.query
+                        .copyWith(sortField: field, sortAscending: asc));
                   },
                   columns: [
                     TableColumnSpec(
@@ -145,7 +153,8 @@ class _PublisherListScreenState extends State<PublisherListScreen> {
                       build: (p) => Text(
                         p.name,
                         style: TextStyle(
-                          decoration: p.isDeleted ? TextDecoration.lineThrough : null,
+                          decoration:
+                              p.isDeleted ? TextDecoration.lineThrough : null,
                         ),
                       ),
                     ),
@@ -169,8 +178,10 @@ class _PublisherListScreenState extends State<PublisherListScreen> {
             size: notifier.result.size,
             total: notifier.result.total,
             totalPages: notifier.result.totalPages,
-            onPageChanged: (newPage) => _updateUrl(query.copyWith(page: newPage)),
-            onSizeChanged: (newSize) => _updateUrl(query.copyWith(size: newSize, page: 1)),
+            onPageChanged: (newPage) =>
+                _updateUrl(query.copyWith(page: newPage)),
+            onSizeChanged: (newSize) =>
+                _updateUrl(query.copyWith(size: newSize, page: 1)),
           ),
         ],
       ),

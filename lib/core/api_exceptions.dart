@@ -10,16 +10,19 @@ sealed class ApiException implements Exception {
 
 class NetworkException extends ApiException {
   const NetworkException([
-    super.message = 'Сервер недоступен. Проверьте соединение или настройки CORS в консоли браузера.',
+    super.message =
+        'Сервер недоступен. Проверьте соединение или настройки CORS в консоли браузера.',
   ]);
 }
 
 class UnauthorizedException extends ApiException {
-  const UnauthorizedException([super.message = 'Требуется авторизация в системе.']);
+  const UnauthorizedException(
+      [super.message = 'Требуется авторизация в системе.']);
 }
 
 class ForbiddenException extends ApiException {
-  const ForbiddenException([super.message = 'Недостаточно прав для выполнения операции.']);
+  const ForbiddenException(
+      [super.message = 'Недостаточно прав для выполнения операции.']);
 }
 
 class NotFoundException extends ApiException {
@@ -36,17 +39,21 @@ class ValidationException extends ApiException {
 }
 
 class ServerException extends ApiException {
-  const ServerException([super.message = 'Внутренняя ошибка сервера (5xx). Попробуйте позже.']);
+  const ServerException(
+      [super.message = 'Внутренняя ошибка сервера (5xx). Попробуйте позже.']);
 }
 
 ApiException mapHttpError(int status, dynamic body) {
-  final message = (body is Map && body['message'] is String) ? body['message'] as String : null;
+  final message = (body is Map && body['message'] is String)
+      ? body['message'] as String
+      : null;
 
   return switch (status) {
     401 => UnauthorizedException(message ?? 'Требуется авторизация.'),
     403 => ForbiddenException(message ?? 'Доступ запрещён.'),
     404 => NotFoundException(message ?? 'Запись не найдена.'),
-    409 => ConflictException(message ?? 'Конфликт данных при выполнении операции.'),
+    409 =>
+      ConflictException(message ?? 'Конфликт данных при выполнении операции.'),
     422 => ValidationException(
         message ?? 'Ошибка валидации данных',
         (body is Map && body['errors'] is Map)
@@ -66,8 +73,7 @@ ApiException mapDioError(DioException e) {
     DioExceptionType.sendTimeout ||
     DioExceptionType.receiveTimeout =>
       const NetworkException('Превышено время ожидания ответа сервера.'),
-    DioExceptionType.connectionError =>
-      const NetworkException(
+    DioExceptionType.connectionError => const NetworkException(
         'Не удалось соединиться с сервером. '
         'Если сервер запущен, проверьте консоль браузера (F12) на наличие ошибки CORS.',
       ),

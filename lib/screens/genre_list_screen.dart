@@ -27,7 +27,8 @@ class _GenreListScreenState extends State<GenreListScreen> {
   }
 
   void _updateUrl(GenreQuery q) {
-    context.go(Uri(path: '/genres', queryParameters: q.toQueryParams()).toString());
+    context.go(
+        Uri(path: '/genres', queryParameters: q.toQueryParams()).toString());
   }
 
   @override
@@ -71,8 +72,12 @@ class _GenreListScreenState extends State<GenreListScreen> {
               sortAscending: notifier.query.sortAscending,
               onSort: (f) => _updateUrl(notifier.query.copyWith(sortField: f)),
               columns: [
-                TableColumnSpec(label: 'Название', sortField: 'name', build: (g) => Text(g.name)),
-                TableColumnSpec(label: 'Описание', build: (g) => Text(g.description)),
+                TableColumnSpec(
+                    label: 'Название',
+                    sortField: 'name',
+                    build: (g) => Text(g.name)),
+                TableColumnSpec(
+                    label: 'Описание', build: (g) => Text(g.description)),
               ],
               actions: (g) => [
                 IconButton(
@@ -88,7 +93,8 @@ class _GenreListScreenState extends State<GenreListScreen> {
             total: notifier.result.total,
             totalPages: notifier.result.totalPages,
             onPageChanged: (p) => _updateUrl(notifier.query.copyWith(page: p)),
-            onSizeChanged: (s) => _updateUrl(notifier.query.copyWith(size: s, page: 1)),
+            onSizeChanged: (s) =>
+                _updateUrl(notifier.query.copyWith(size: s, page: 1)),
           ),
         ],
       ),

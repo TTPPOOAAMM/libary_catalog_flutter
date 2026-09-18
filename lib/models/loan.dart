@@ -42,8 +42,10 @@ class Loan {
       bookId: json['bookId'] as int? ?? 0,
       bookTitle: json['bookTitle'] as String? ?? 'Книга #${json['bookId']}',
       readerId: json['readerId'] as int? ?? 0,
-      readerName: json['readerName'] as String? ?? 'Читатель #${json['readerId']}',
-      issuedAt: DateTime.tryParse(json['issuedAt'] as String? ?? '') ?? DateTime.now(),
+      readerName:
+          json['readerName'] as String? ?? 'Читатель #${json['readerId']}',
+      issuedAt: DateTime.tryParse(json['issuedAt'] as String? ?? '') ??
+          DateTime.now(),
       dueDate: DateTime.tryParse(json['dueDate'] as String? ?? '') ??
           DateTime.now().add(const Duration(days: 14)),
       returnedAt: json['returnedAt'] == null

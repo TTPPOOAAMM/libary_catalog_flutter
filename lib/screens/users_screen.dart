@@ -46,7 +46,9 @@ class _UsersScreenState extends State<UsersScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка изменения роли: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('Ошибка изменения роли: $e'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -72,7 +74,8 @@ class _UsersScreenState extends State<UsersScreen> {
             color: Colors.amber.shade50,
             child: Row(
               children: [
-                const Icon(Icons.developer_mode, size: 20, color: Colors.orange),
+                const Icon(Icons.developer_mode,
+                    size: 20, color: Colors.orange),
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text(
@@ -82,10 +85,13 @@ class _UsersScreenState extends State<UsersScreen> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    await context.read<AuthNotifier>().simulateDevToolsRoleChange(UserRole.reader);
+                    await context
+                        .read<AuthNotifier>()
+                        .simulateDevToolsRoleChange(UserRole.reader);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Роль в UI подменена на "reader"!')),
+                        const SnackBar(
+                            content: Text('Роль в UI подменена на "reader"!')),
                       );
                     }
                   },
@@ -105,16 +111,21 @@ class _UsersScreenState extends State<UsersScreen> {
                         itemBuilder: (ctx, i) {
                           final u = _users[i];
                           return ListTile(
-                            leading: CircleAvatar(child: Text(u.username.substring(0, 1).toUpperCase())),
+                            leading: CircleAvatar(
+                                child: Text(
+                                    u.username.substring(0, 1).toUpperCase())),
                             title: Text(u.fullName),
                             subtitle: Text('${u.username} • ${u.email}'),
                             trailing: DropdownButton<UserRole>(
                               value: u.role,
                               items: UserRole.values
-                                  .map((r) => DropdownMenuItem(value: r, child: Text(r.label)))
+                                  .map((r) => DropdownMenuItem(
+                                      value: r, child: Text(r.label)))
                                   .toList(),
                               onChanged: (newR) {
-                                if (newR != null && newR != u.role) _changeRole(u, newR);
+                                if (newR != null && newR != u.role) {
+                                  _changeRole(u, newR);
+                                }
                               },
                             ),
                           );

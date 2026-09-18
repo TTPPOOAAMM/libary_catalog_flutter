@@ -60,11 +60,16 @@ class _LoansScreenState extends State<LoansScreen> {
                     final l = _loans[i];
                     return ListTile(
                       leading: Icon(
-                        l.isReturned ? Icons.check_circle : (l.isOverdue ? Icons.warning : Icons.book),
-                        color: l.isReturned ? Colors.green : (l.isOverdue ? Colors.red : Colors.blue),
+                        l.isReturned
+                            ? Icons.check_circle
+                            : (l.isOverdue ? Icons.warning : Icons.book),
+                        color: l.isReturned
+                            ? Colors.green
+                            : (l.isOverdue ? Colors.red : Colors.blue),
                       ),
                       title: Text(l.bookTitle),
-                      subtitle: Text('Читатель: ${l.readerName} | До: ${l.dueDate.toString().split(' ')[0]}'),
+                      subtitle: Text(
+                          'Читатель: ${l.readerName} | До: ${l.dueDate.toString().split(' ')[0]}'),
                       trailing: l.isReturned
                           ? const Chip(label: Text('Возвращена'))
                           : FilledButton.tonal(

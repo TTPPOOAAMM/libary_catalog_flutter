@@ -20,7 +20,10 @@ class ApiUserRepository implements UserRepository {
         final list = (data is Map && data['items'] is List)
             ? data['items'] as List
             : (data is List ? data : const []);
-        return list.whereType<Map<String, dynamic>>().map(User.fromJson).toList();
+        return list
+            .whereType<Map<String, dynamic>>()
+            .map(User.fromJson)
+            .toList();
       });
 
   @override

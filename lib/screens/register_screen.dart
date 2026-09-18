@@ -54,7 +54,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (!_strength.isValid) {
-      setState(() => _errorMessage = 'Пароль не отвечает всем требованиям безопасности.');
+      setState(() =>
+          _errorMessage = 'Пароль не отвечает всем требованиям безопасности.');
       return;
     }
 
@@ -125,7 +126,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             constraints: const BoxConstraints(maxWidth: 460),
             child: Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Form(
@@ -137,7 +139,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Text(
                         'Новый пользователь',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 20),
                       if (_errorMessage != null)
@@ -149,34 +154,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             border: Border.all(color: Colors.red.shade200),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+                          child: Text(_errorMessage!,
+                              style: const TextStyle(color: Colors.red)),
                         ),
                       TextFormField(
                         controller: _fullNameController,
-                        decoration: const InputDecoration(labelText: 'ФИО', border: OutlineInputBorder()),
-                        validator: V.combine([V.required(), V.length(min: 3, max: 100)]),
+                        decoration: const InputDecoration(
+                            labelText: 'ФИО', border: OutlineInputBorder()),
+                        validator: V.combine(
+                            [V.required(), V.length(min: 3, max: 100)]),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: const InputDecoration(labelText: 'Логин', border: OutlineInputBorder()),
-                        validator: V.combine([V.required(), V.length(min: 3, max: 30)]),
+                        decoration: const InputDecoration(
+                            labelText: 'Логин', border: OutlineInputBorder()),
+                        validator: V
+                            .combine([V.required(), V.length(min: 3, max: 30)]),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _emailController,
-                        decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: 'Email', border: OutlineInputBorder()),
                         validator: V.combine([V.required(), V.email()]),
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         initialValue: _selectedRole,
-                        decoration: const InputDecoration(labelText: 'Роль', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: 'Роль', border: OutlineInputBorder()),
                         items: const [
-                          DropdownMenuItem(value: 'reader', child: Text('Читатель')),
-                          DropdownMenuItem(value: 'librarian', child: Text('Библиотекарь')),
+                          DropdownMenuItem(
+                              value: 'reader', child: Text('Читатель')),
+                          DropdownMenuItem(
+                              value: 'librarian', child: Text('Библиотекарь')),
                         ],
-                        onChanged: (val) => setState(() => _selectedRole = val ?? 'reader'),
+                        onChanged: (val) =>
+                            setState(() => _selectedRole = val ?? 'reader'),
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -199,11 +214,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Требования к надежности пароля:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            const Text('Требования к надежности пароля:',
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            _buildCheckRow(_strength.hasMinLength, 'Минимум 8 символов'),
-                            _buildCheckRow(_strength.hasDigit, 'Минимум одна цифра'),
-                            _buildCheckRow(_strength.hasSpecialChar, 'Минимум один спецсимвол (!@#\$%...)'),
+                            _buildCheckRow(
+                                _strength.hasMinLength, 'Минимум 8 символов'),
+                            _buildCheckRow(
+                                _strength.hasDigit, 'Минимум одна цифра'),
+                            _buildCheckRow(_strength.hasSpecialChar,
+                                'Минимум один спецсимвол (!@#\$%...)'),
                           ],
                         ),
                       ),
@@ -211,7 +231,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       FilledButton(
                         onPressed: _isLoading ? null : _submit,
                         child: _isLoading
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white))
                             : const Text('Зарегистрироваться'),
                       ),
                     ],

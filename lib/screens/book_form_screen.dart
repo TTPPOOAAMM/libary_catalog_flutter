@@ -46,7 +46,11 @@ class _BookFormScreenState extends State<BookFormScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDependenciesAndBook();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadDependenciesAndBook();
+      }
+    });
   }
 
   Future<void> _loadDependenciesAndBook() async {
@@ -65,7 +69,10 @@ class _BookFormScreenState extends State<BookFormScreen> {
         book = await bookRepo.findById(widget.id!);
       }
 
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
+
       setState(() {
         _publishers = pubs;
         _authors = auts;
@@ -87,7 +94,9 @@ class _BookFormScreenState extends State<BookFormScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка загрузки данных: $e')),
       );
@@ -107,25 +116,36 @@ class _BookFormScreenState extends State<BookFormScreen> {
   }
 
   void _markModified() {
-    if (!_isModified) setState(() => _isModified = true);
+    if (!_isModified) {
+      setState(() => _isModified = true);
+    }
   }
 
   List<Genre> get _availableGenres {
-    if (_publisherId == 1) return _allGenres.where((g) => g.id == 1 || g.id == 3).toList();
-    if (_publisherId == 2) return _allGenres.where((g) => g.id == 1 || g.id == 2).toList();
+    if (_publisherId == 1) {
+      return _allGenres.where((g) => g.id == 1 || g.id == 3).toList();
+    }
+    if (_publisherId == 2) {
+      return _allGenres.where((g) => g.id == 1 || g.id == 2).toList();
+    }
     return _allGenres;
   }
 
   Future<void> _submit() async {
-    if (_isSaving) return;
+    if (_isSaving) {
+      return;
+    }
     setState(() => _serverErrors = {});
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
     final total = int.tryParse(_totalController.text.trim()) ?? 0;
     final avail = int.tryParse(_availableController.text.trim()) ?? 0;
     if (avail > total) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Доступных копий не может быть больше, чем всего')),
+        const SnackBar(
+            content: Text('Доступных копий не может быть больше, чем всего')),
       );
       return;
     }
@@ -152,37 +172,52 @@ class _BookFormScreenState extends State<BookFormScreen> {
       } else {
         await bookRepo.create(item);
       }
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() => _isModified = false);
       context.go('/books');
     } on ValidationException catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() => _serverErrors = e.errors);
       _formKey.currentState!.validate();
     } on ConflictException catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message), backgroundColor: Colors.red),
       );
     } on ApiException catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message), backgroundColor: Colors.red),
       );
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Произошла ошибка: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text('Произошла ошибка: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return FormShell(
-      title: widget.id == null ? 'Новая книга' : 'Редактирование книги #${widget.id}',
+      title: widget.id == null
+          ? 'Новая книга'
+          : 'Редактирование книги #${widget.id}',
       formKey: _formKey,
       isModified: _isModified,
       isLoading: _isLoading,
@@ -197,7 +232,9 @@ class _BookFormScreenState extends State<BookFormScreen> {
             errorText: _serverErrors['title'],
           ),
           validator: (v) {
-            if (_serverErrors['title'] != null) return _serverErrors['title'];
+            if (_serverErrors['title'] != null) {
+              return _serverErrors['title'];
+            }
             return V.combine([V.required(), V.length(min: 2, max: 250)])(v);
           },
           onChanged: (_) {
@@ -216,7 +253,9 @@ class _BookFormScreenState extends State<BookFormScreen> {
             errorText: _serverErrors['isbn'],
           ),
           validator: (v) {
-            if (_serverErrors['isbn'] != null) return _serverErrors['isbn'];
+            if (_serverErrors['isbn'] != null) {
+              return _serverErrors['isbn'];
+            }
             return V.combine([V.required(), V.isbn()])(v);
           },
           onChanged: (_) {
@@ -239,8 +278,11 @@ class _BookFormScreenState extends State<BookFormScreen> {
                 ),
                 keyboardType: TextInputType.number,
                 validator: (v) {
-                  if (_serverErrors['year'] != null) return _serverErrors['year'];
-                  return V.combine([V.required(), V.integer(min: 1450, max: 2026)])(v);
+                  if (_serverErrors['year'] != null) {
+                    return _serverErrors['year'];
+                  }
+                  return V.combine(
+                      [V.required(), V.integer(min: 1450, max: 2026)])(v);
                 },
                 onChanged: (_) {
                   if (_serverErrors.containsKey('year')) {
@@ -261,8 +303,11 @@ class _BookFormScreenState extends State<BookFormScreen> {
                 ),
                 keyboardType: TextInputType.number,
                 validator: (v) {
-                  if (_serverErrors['pages'] != null) return _serverErrors['pages'];
-                  return V.combine([V.required(), V.integer(min: 1, max: 10000)])(v);
+                  if (_serverErrors['pages'] != null) {
+                    return _serverErrors['pages'];
+                  }
+                  return V.combine(
+                      [V.required(), V.integer(min: 1, max: 10000)])(v);
                 },
                 onChanged: (_) {
                   if (_serverErrors.containsKey('pages')) {
@@ -277,9 +322,11 @@ class _BookFormScreenState extends State<BookFormScreen> {
         const SizedBox(height: 16),
         DropdownButtonFormField<int>(
           initialValue: _publisherId,
-          decoration: const InputDecoration(labelText: 'Издательство (1:N)', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Издательство (1:N)', border: OutlineInputBorder()),
           items: _publishers
-              .map((p) => DropdownMenuItem(value: p.id, child: Text('${p.name} (${p.city})')))
+              .map((p) => DropdownMenuItem(
+                  value: p.id, child: Text('${p.name} (${p.city})')))
               .toList(),
           onChanged: (val) {
             _markModified();
@@ -294,7 +341,9 @@ class _BookFormScreenState extends State<BookFormScreen> {
         const SizedBox(height: 16),
         FormField<List<int>>(
           initialValue: _authorIds,
-          validator: (val) => (val == null || val.isEmpty) ? 'Выберите хотя бы одного автора' : null,
+          validator: (val) => (val == null || val.isEmpty)
+              ? 'Выберите хотя бы одного автора'
+              : null,
           builder: (state) => InputDecorator(
             decoration: InputDecoration(
               labelText: 'Авторы (M:N)',
@@ -324,7 +373,9 @@ class _BookFormScreenState extends State<BookFormScreen> {
         const SizedBox(height: 16),
         FormField<List<int>>(
           initialValue: _genreIds,
-          validator: (val) => (val == null || val.isEmpty) ? 'Выберите хотя бы один жанр' : null,
+          validator: (val) => (val == null || val.isEmpty)
+              ? 'Выберите хотя бы один жанр'
+              : null,
           builder: (state) => InputDecorator(
             decoration: InputDecoration(
               labelText: 'Жанры (каскадно фильтруются издательством)',
@@ -357,9 +408,12 @@ class _BookFormScreenState extends State<BookFormScreen> {
             Expanded(
               child: TextFormField(
                 controller: _totalController,
-                decoration: const InputDecoration(labelText: 'Всего экземпляров', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                    labelText: 'Всего экземпляров',
+                    border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
-                validator: V.combine([V.required(), V.integer(min: 0, max: 1000)]),
+                validator:
+                    V.combine([V.required(), V.integer(min: 0, max: 1000)]),
                 onChanged: (_) => _markModified(),
               ),
             ),
@@ -367,9 +421,11 @@ class _BookFormScreenState extends State<BookFormScreen> {
             Expanded(
               child: TextFormField(
                 controller: _availableController,
-                decoration: const InputDecoration(labelText: 'Доступно', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                    labelText: 'Доступно', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
-                validator: V.combine([V.required(), V.integer(min: 0, max: 1000)]),
+                validator:
+                    V.combine([V.required(), V.integer(min: 0, max: 1000)]),
                 onChanged: (_) => _markModified(),
               ),
             ),

@@ -19,8 +19,9 @@ class AuthorDetailScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           final author = snapshot.data;
-          if (author == null) return const Center(child: Text('Автор не найден'));
-
+          if (author == null) {
+            return const Center(child: Text('Автор не найден'));
+          }
           return Padding(
             padding: const EdgeInsets.all(24),
             child: Card(
@@ -30,13 +31,15 @@ class AuthorDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(author.fullName, style: Theme.of(context).textTheme.headlineMedium),
+                    Text(author.fullName,
+                        style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 12),
                     Text('Страна: ${author.country}'),
                     Text('Год рождения: ${author.birthYear}'),
                     if (author.isDeleted) ...[
                       const SizedBox(height: 8),
-                      Text('Удалён: ${author.deletedAt}', style: const TextStyle(color: Colors.red)),
+                      Text('Удалён: ${author.deletedAt}',
+                          style: const TextStyle(color: Colors.red)),
                     ],
                   ],
                 ),

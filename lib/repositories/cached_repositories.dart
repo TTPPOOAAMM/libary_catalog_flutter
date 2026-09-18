@@ -36,32 +36,36 @@ class CachedAuthorRepository implements AuthorRepository {
     invalidate();
     return _inner.create(author);
   }
+
   @override
   Future<Author> update(Author author) async {
     invalidate();
     return _inner.update(author);
   }
+
   @override
   Future<void> softDelete(int id) async {
     invalidate();
     return _inner.softDelete(id);
   }
+
   @override
   Future<void> hardDelete(int id) async {
     invalidate();
     return _inner.hardDelete(id);
   }
+
   @override
   Future<void> restore(int id) async {
     invalidate();
     return _inner.restore(id);
   }
+
   @override
   Future<int> deleteMany(List<int> ids) async {
     invalidate();
     return _inner.deleteMany(ids);
   }
-  
 }
 
 class CachedGenreRepository implements GenreRepository {
@@ -87,26 +91,31 @@ class CachedGenreRepository implements GenreRepository {
     invalidate();
     return _inner.create(genre);
   }
+
   @override
   Future<Genre> update(Genre genre) async {
     invalidate();
     return _inner.update(genre);
   }
+
   @override
   Future<void> softDelete(int id) async {
     invalidate();
     return _inner.softDelete(id);
   }
+
   @override
   Future<void> hardDelete(int id) async {
     invalidate();
     return _inner.hardDelete(id);
   }
+
   @override
   Future<void> restore(int id) async {
     invalidate();
     return _inner.restore(id);
   }
+
   @override
   Future<int> deleteMany(List<int> ids) async {
     invalidate();
@@ -132,7 +141,8 @@ class CachedPublisherRepository implements PublisherRepository {
   Future<int> countBooksReferencing(int publisherId) =>
       _inner.countBooksReferencing(publisherId);
   @override
-  Future<PageResult<Publisher>> find(PublisherQuery query) => _inner.find(query);
+  Future<PageResult<Publisher>> find(PublisherQuery query) =>
+      _inner.find(query);
   @override
   Future<Publisher?> findById(int id) => _inner.findById(id);
   @override
@@ -140,26 +150,31 @@ class CachedPublisherRepository implements PublisherRepository {
     invalidate();
     return _inner.create(publisher);
   }
+
   @override
   Future<Publisher> update(Publisher publisher) async {
     invalidate();
     return _inner.update(publisher);
   }
+
   @override
   Future<void> softDelete(int id) async {
     invalidate();
     return _inner.softDelete(id);
   }
+
   @override
   Future<void> hardDelete(int id) async {
     invalidate();
     return _inner.hardDelete(id);
   }
+
   @override
   Future<void> restore(int id) async {
     invalidate();
     return _inner.restore(id);
   }
+
   @override
   Future<int> deleteMany(List<int> ids) async {
     invalidate();

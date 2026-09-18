@@ -28,7 +28,6 @@ class ApiAuthRepository implements AuthRepository {
     String fallbackEmail = '',
     String fallbackRole = 'reader',
   }) {
-    // 1. Извлекаем пользователя: из data['user'], либо из корня ответа data
     User user;
     if (data['user'] is Map<String, dynamic>) {
       user = User.fromJson(data['user'] as Map<String, dynamic>);
@@ -38,18 +37,18 @@ class ApiAuthRepository implements AuthRepository {
       user = User(
         id: data['id'] as int? ?? data['userId'] as int? ?? 1,
         username: data['username'] as String? ?? fallbackUsername,
-        fullName: data['fullName'] as String? ?? fallbackFullName.ifEmpty(fallbackUsername),
+        fullName: data['fullName'] as String? ??
+            fallbackFullName.ifEmpty(fallbackUsername),
         email: data['email'] as String? ?? fallbackEmail,
         role: UserRole.fromString(data['role'] as String? ?? fallbackRole),
       );
     }
 
-    // 2. Извлекаем токены: поддерживаем accessToken/access_token и токены внутри data['tokens']
     Map<String, dynamic> tokenMap = data;
     if (data['tokens'] is Map) {
       tokenMap = Map<String, dynamic>.from(data['tokens'] as Map);
     }
-    
+
     final tokens = AuthTokens(
       accessToken: tokenMap['accessToken'] as String? ??
           tokenMap['access_token'] as String? ??
@@ -71,7 +70,9 @@ class ApiAuthRepository implements AuthRepository {
           'password': password,
         });
         final rawData = res.data;
-        final data = rawData is Map ? Map<String, dynamic>.from(rawData) : <String, dynamic>{};
+        final data = rawData is Map
+            ? Map<String, dynamic>.from(rawData)
+            : <String, dynamic>{};
         return _parseAuthResponse(data, fallbackUsername: username.trim());
       });
 
@@ -92,7 +93,9 @@ class ApiAuthRepository implements AuthRepository {
           'role': role,
         });
         final rawData = res.data;
-        final data = rawData is Map ? Map<String, dynamic>.from(rawData) : <String, dynamic>{};
+        final data = rawData is Map
+            ? Map<String, dynamic>.from(rawData)
+            : <String, dynamic>{};
         return _parseAuthResponse(
           data,
           fallbackUsername: username.trim(),
@@ -109,7 +112,9 @@ class ApiAuthRepository implements AuthRepository {
           'refresh_token': refreshToken,
         });
         final rawData = res.data;
-        final data = rawData is Map ? Map<String, dynamic>.from(rawData) : <String, dynamic>{};
+        final data = rawData is Map
+            ? Map<String, dynamic>.from(rawData)
+            : <String, dynamic>{};
         return AuthTokens(
           accessToken: data['accessToken'] as String? ??
               data['access_token'] as String? ??
@@ -125,7 +130,9 @@ class ApiAuthRepository implements AuthRepository {
   Future<User> getCurrentUser() => guard(() async {
         final res = await _dio.get('/auth/me');
         final rawData = res.data;
-        final data = rawData is Map ? Map<String, dynamic>.from(rawData) : <String, dynamic>{};
+        final data = rawData is Map
+            ? Map<String, dynamic>.from(rawData)
+            : <String, dynamic>{};
         if (data['user'] is Map) {
           return User.fromJson(Map<String, dynamic>.from(data['user'] as Map));
         }

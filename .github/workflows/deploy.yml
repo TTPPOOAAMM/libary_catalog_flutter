@@ -1,0 +1,53 @@
+name: Build, Test and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - practice-06
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --set-exit-if-changed lib test
+
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Run automated tests
+        run: flutter test
+
+      - name: Build Web Release (Standard JS)
+        run: |
+          flutter build web --release \
+            --base-href /libary_catalog_flutter/ \
+            --dart-define=API_BASE_URL=https://api.example.com/api
+
+      - name: Prepare SPA 404 fallback for GitHub Pages
+        run: cp build/web/index.html build/web/404.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/practice-06'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web

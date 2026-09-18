@@ -84,7 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
             constraints: const BoxConstraints(maxWidth: 420),
             child: Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Form(
@@ -93,12 +94,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Icon(Icons.menu_book_rounded, size: 48, color: Colors.indigo),
+                      const Icon(Icons.menu_book_rounded,
+                          size: 48, color: Colors.indigo),
                       const SizedBox(height: 12),
                       Text(
                         'Каталог библиотеки',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 24),
                       if (_errorMessage != null)
@@ -112,9 +117,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                              const Icon(Icons.error_outline,
+                                  color: Colors.red, size: 20),
                               const SizedBox(width: 8),
-                              Expanded(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red))),
+                              Expanded(
+                                  child: Text(_errorMessage!,
+                                      style:
+                                          const TextStyle(color: Colors.red))),
                             ],
                           ),
                         ),
@@ -136,8 +145,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: const Icon(Icons.lock_outline),
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            icon: Icon(_obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                            onPressed: () => setState(
+                                () => _obscurePassword = !_obscurePassword),
                           ),
                         ),
                         validator: V.required('Введите пароль'),
@@ -150,17 +162,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white),
                               )
                             : const Text('Войти'),
                       ),
                       const SizedBox(height: 12),
                       TextButton(
                         onPressed: () {
-                          final fromParam = widget.from != null ? '?from=${widget.from}' : '';
+                          final fromParam =
+                              widget.from != null ? '?from=${widget.from}' : '';
                           context.go('/register$fromParam');
                         },
-                        child: const Text('Нет учётной записи? Зарегистрироваться'),
+                        child: const Text(
+                            'Нет учётной записи? Зарегистрироваться'),
                       ),
                     ],
                   ),

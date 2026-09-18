@@ -5,7 +5,8 @@ import '../models/loan.dart';
 abstract class LoanRepository {
   Future<List<Loan>> findAll();
   Future<List<Loan>> findMyLoans();
-  Future<Loan> issueLoan({required int bookId, required int readerId, int days = 14});
+  Future<Loan> issueLoan(
+      {required int bookId, required int readerId, int days = 14});
   Future<Loan> returnLoan(int loanId);
   Future<Loan> extendLoan(int loanId, {int additionalDays = 14});
 }
@@ -21,7 +22,10 @@ class ApiLoanRepository implements LoanRepository {
         final list = (data is Map && data['items'] is List)
             ? data['items'] as List
             : (data is List ? data : const []);
-        return list.whereType<Map<String, dynamic>>().map(Loan.fromJson).toList();
+        return list
+            .whereType<Map<String, dynamic>>()
+            .map(Loan.fromJson)
+            .toList();
       });
 
   @override
@@ -31,11 +35,15 @@ class ApiLoanRepository implements LoanRepository {
         final list = (data is Map && data['items'] is List)
             ? data['items'] as List
             : (data is List ? data : const []);
-        return list.whereType<Map<String, dynamic>>().map(Loan.fromJson).toList();
+        return list
+            .whereType<Map<String, dynamic>>()
+            .map(Loan.fromJson)
+            .toList();
       });
 
   @override
-  Future<Loan> issueLoan({required int bookId, required int readerId, int days = 14}) =>
+  Future<Loan> issueLoan(
+          {required int bookId, required int readerId, int days = 14}) =>
       guard(() async {
         final res = await _dio.post('/loans', data: {
           'bookId': bookId,
@@ -52,7 +60,8 @@ class ApiLoanRepository implements LoanRepository {
       });
 
   @override
-  Future<Loan> extendLoan(int loanId, {int additionalDays = 14}) => guard(() async {
+  Future<Loan> extendLoan(int loanId, {int additionalDays = 14}) =>
+      guard(() async {
         final res = await _dio.put('/loans/$loanId/extend', data: {
           'days': additionalDays,
         });

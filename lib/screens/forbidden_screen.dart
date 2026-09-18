@@ -24,7 +24,10 @@ class ForbiddenScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 'Ошибка 403: Доступ запрещён',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(

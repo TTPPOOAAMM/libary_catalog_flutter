@@ -62,14 +62,16 @@ class _PublisherFormScreenState extends State<PublisherFormScreen> {
       children: [
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(labelText: 'Наименование', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Наименование', border: OutlineInputBorder()),
           validator: V.required(),
           onChanged: (_) => setState(() => _isModified = true),
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _cityController,
-          decoration: const InputDecoration(labelText: 'Город', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Город', border: OutlineInputBorder()),
           validator: V.required(),
           onChanged: (_) => setState(() => _isModified = true),
         ),

@@ -41,7 +41,8 @@ Dio buildDio({
         final path = response.requestOptions.path;
 
         if (kDebugMode) {
-          debugPrint('[API RES] ${response.requestOptions.method} ${response.requestOptions.uri} -> $status');
+          debugPrint(
+              '[API RES] ${response.requestOptions.method} ${response.requestOptions.uri} -> $status');
         }
 
         if (status == 401) {
@@ -71,7 +72,8 @@ Dio buildDio({
                 requestOptions: response.requestOptions,
                 response: response,
                 type: DioExceptionType.badResponse,
-                error: const UnauthorizedException('Сессия истекла. Войдите снова.'),
+                error: const UnauthorizedException(
+                    'Сессия истекла. Войдите снова.'),
               ),
               true,
             );
@@ -108,7 +110,8 @@ Dio buildDio({
       },
       onError: (error, handler) {
         if (kDebugMode) {
-          debugPrint('[API ERR] ${error.requestOptions.uri}: ${error.type} | ${error.message}');
+          debugPrint(
+              '[API ERR] ${error.requestOptions.uri}: ${error.type} | ${error.message}');
         }
         return handler.next(error);
       },

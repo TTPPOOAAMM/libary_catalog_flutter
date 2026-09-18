@@ -89,28 +89,32 @@ class _AuthorFormScreenState extends State<AuthorFormScreen> {
       children: [
         TextFormField(
           controller: _firstNameController,
-          decoration: const InputDecoration(labelText: 'Имя', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Имя', border: OutlineInputBorder()),
           validator: V.required(),
           onChanged: (_) => setState(() => _isModified = true),
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _lastNameController,
-          decoration: const InputDecoration(labelText: 'Фамилия', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Фамилия', border: OutlineInputBorder()),
           validator: V.required(),
           onChanged: (_) => setState(() => _isModified = true),
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _countryController,
-          decoration: const InputDecoration(labelText: 'Страна', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Страна', border: OutlineInputBorder()),
           validator: V.required(),
           onChanged: (_) => setState(() => _isModified = true),
         ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _birthYearController,
-          decoration: const InputDecoration(labelText: 'Год рождения', border: OutlineInputBorder()),
+          decoration: const InputDecoration(
+              labelText: 'Год рождения', border: OutlineInputBorder()),
           keyboardType: TextInputType.number,
           validator: V.combine([V.required(), V.integer(min: 0, max: 2026)]),
           onChanged: (_) => setState(() => _isModified = true),

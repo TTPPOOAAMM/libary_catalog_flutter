@@ -15,7 +15,6 @@ class _SessionActivityTrackerState extends State<SessionActivityTracker> {
   @override
   void initState() {
     super.initState();
-    // Глобальный перехват клавиатуры без FocusNode (не ломает ввод в TextField)
     HardwareKeyboard.instance.addHandler(_handleKeyEvent);
   }
 
@@ -58,7 +57,8 @@ class _SessionActivityTrackerState extends State<SessionActivityTracker> {
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.amber.shade900,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
                         const Icon(Icons.timer, color: Colors.white),
@@ -66,7 +66,9 @@ class _SessionActivityTrackerState extends State<SessionActivityTracker> {
                         Expanded(
                           child: Text(
                             'Внимание! Сессия завершится через ${auth.secondsUntilLogout} сек. из-за неактивности.',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                         FilledButton.tonal(

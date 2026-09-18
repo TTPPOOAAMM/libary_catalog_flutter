@@ -37,7 +37,8 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
   }
 
   void _updateUrl(AuthorQuery next) {
-    context.go(Uri(path: '/authors', queryParameters: next.toQueryParams()).toString());
+    context.go(Uri(path: '/authors', queryParameters: next.toQueryParams())
+        .toString());
   }
 
   @override
@@ -86,18 +87,24 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
                       value: query.country,
                       hint: const Text('Все страны'),
                       items: const [
-                        DropdownMenuItem(value: null, child: Text('Все страны')),
-                        DropdownMenuItem(value: 'Россия', child: Text('Россия')),
-                        DropdownMenuItem(value: 'Великобритания', child: Text('Великобритания')),
+                        DropdownMenuItem(
+                            value: null, child: Text('Все страны')),
+                        DropdownMenuItem(
+                            value: 'Россия', child: Text('Россия')),
+                        DropdownMenuItem(
+                            value: 'Великобритания',
+                            child: Text('Великобритания')),
                         DropdownMenuItem(value: 'США', child: Text('США')),
-                        DropdownMenuItem(value: 'Франция', child: Text('Франция')),
+                        DropdownMenuItem(
+                            value: 'Франция', child: Text('Франция')),
                       ],
                       onChanged: (v) => _updateUrl(query.copyWith(country: v)),
                     ),
                     FilterChip(
                       label: const Text('Показать удалённых'),
                       selected: query.includeDeleted,
-                      onSelected: (v) => _updateUrl(query.copyWith(includeDeleted: v)),
+                      onSelected: (v) =>
+                          _updateUrl(query.copyWith(includeDeleted: v)),
                     ),
                   ],
                 ),
@@ -122,9 +129,12 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
             ),
           Expanded(
             child: switch (notifier.status) {
-              LoadStatus.loading => const Center(child: CircularProgressIndicator()),
-              LoadStatus.error => Center(child: Text(notifier.error ?? 'Ошибка')),
-              LoadStatus.idle || LoadStatus.success when notifier.result.items.isEmpty =>
+              LoadStatus.loading =>
+                const Center(child: CircularProgressIndicator()),
+              LoadStatus.error =>
+                Center(child: Text(notifier.error ?? 'Ошибка')),
+              LoadStatus.idle ||
+              LoadStatus.success when notifier.result.items.isEmpty =>
                 const Center(child: Text('Авторы не найдены')),
               _ => EntityTable<Author>(
                   items: notifier.result.items,
@@ -135,15 +145,22 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
                   sortField: notifier.query.sortField,
                   sortAscending: notifier.query.sortAscending,
                   onSort: (field) {
-                    final asc = field == notifier.query.sortField ? !notifier.query.sortAscending : true;
-                    _updateUrl(notifier.query.copyWith(sortField: field, sortAscending: asc));
+                    final asc = field == notifier.query.sortField
+                        ? !notifier.query.sortAscending
+                        : true;
+                    _updateUrl(notifier.query
+                        .copyWith(sortField: field, sortAscending: asc));
                   },
                   onTap: (a) => context.go('/authors/${a.id}'),
                   columns: [
                     TableColumnSpec(
                       label: 'Фамилия, Имя',
                       sortField: 'lastName',
-                      build: (a) => Text(a.fullName, style: TextStyle(decoration: a.isDeleted ? TextDecoration.lineThrough : null)),
+                      build: (a) => Text(a.fullName,
+                          style: TextStyle(
+                              decoration: a.isDeleted
+                                  ? TextDecoration.lineThrough
+                                  : null)),
                     ),
                     TableColumnSpec(
                       label: 'Страна',
@@ -159,10 +176,17 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
                   ],
                   actions: (a) => [
                     if (a.isDeleted)
-                      IconButton(icon: const Icon(Icons.restore, color: Colors.green), onPressed: () => notifier.restore(a.id))
+                      IconButton(
+                          icon: const Icon(Icons.restore, color: Colors.green),
+                          onPressed: () => notifier.restore(a.id))
                     else
-                      IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => notifier.softDelete(a.id)),
-                    IconButton(icon: const Icon(Icons.delete_forever, color: Colors.red), onPressed: () => notifier.hardDelete(a.id)),
+                      IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () => notifier.softDelete(a.id)),
+                    IconButton(
+                        icon:
+                            const Icon(Icons.delete_forever, color: Colors.red),
+                        onPressed: () => notifier.hardDelete(a.id)),
                   ],
                 ),
             },
@@ -172,8 +196,10 @@ class _AuthorListScreenState extends State<AuthorListScreen> {
             size: notifier.result.size,
             total: notifier.result.total,
             totalPages: notifier.result.totalPages,
-            onPageChanged: (newPage) => _updateUrl(query.copyWith(page: newPage)),
-            onSizeChanged: (newSize) => _updateUrl(query.copyWith(size: newSize, page: 1)),
+            onPageChanged: (newPage) =>
+                _updateUrl(query.copyWith(page: newPage)),
+            onSizeChanged: (newSize) =>
+                _updateUrl(query.copyWith(size: newSize, page: 1)),
           ),
         ],
       ),

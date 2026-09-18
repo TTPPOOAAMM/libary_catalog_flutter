@@ -90,7 +90,10 @@ class Book {
 
     List<int> autIds = const [];
     if (json['authorIds'] is List) {
-      autIds = (json['authorIds'] as List).whereType<num>().map((e) => e.toInt()).toList();
+      autIds = (json['authorIds'] as List)
+          .whereType<num>()
+          .map((e) => e.toInt())
+          .toList();
     } else if (json['authors'] is List) {
       autIds = (json['authors'] as List)
           .whereType<Map>()
@@ -102,7 +105,10 @@ class Book {
 
     List<int> genIds = const [];
     if (json['genreIds'] is List) {
-      genIds = (json['genreIds'] as List).whereType<num>().map((e) => e.toInt()).toList();
+      genIds = (json['genreIds'] as List)
+          .whereType<num>()
+          .map((e) => e.toInt())
+          .toList();
     } else if (json['genres'] is List) {
       genIds = (json['genres'] as List)
           .whereType<Map>()
@@ -123,7 +129,9 @@ class Book {
       genreIds: genIds,
       copiesTotal: json['copiesTotal'] as int? ?? 0,
       copiesAvailable: json['copiesAvailable'] as int? ?? 0,
-      deletedAt: json['deletedAt'] == null ? null : DateTime.tryParse(json['deletedAt'] as String),
+      deletedAt: json['deletedAt'] == null
+          ? null
+          : DateTime.tryParse(json['deletedAt'] as String),
     );
   }
 }
