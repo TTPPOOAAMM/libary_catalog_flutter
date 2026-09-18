@@ -133,8 +133,9 @@ class _ReaderFormScreenState extends State<ReaderFormScreen> {
             return V.combine([V.required(), V.email()])(v);
           },
           onChanged: (_) {
-            if (_emailServerError != null)
+            if (_emailServerError != null) {
               setState(() => _emailServerError = null);
+            }
             _markModified();
           },
         ),

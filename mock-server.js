@@ -415,6 +415,8 @@ function validate(collection, body, id = null) {
 // ──────────────────────────── HTTP-обвязка ────────────────────────────
 
 function cors(res) {
+  const clientOrigin = res.req?.headers?.origin || ORIGIN;
+
   res.setHeader('Access-Control-Allow-Origin', ORIGIN);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -799,6 +801,7 @@ function normalize(collection, body) {
 seed();
 
 const server = http.createServer(async (req, res) => {
+  res.req = req;
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
   // Предварительный запрос браузера. Без этого обработчика

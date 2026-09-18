@@ -243,9 +243,10 @@ class PersistentPublisherRepository implements PublisherRepository {
   @override
   Future<void> softDelete(int id) async {
     final count = await countBooksReferencing(id);
-    if (count > 0)
+    if (count > 0) {
       throw StateError(
           'Нельзя удалить издательство: к нему привязано $count книг');
+    }
     final i = _publishers.indexWhere((p) => p.id == id);
     if (i != -1) {
       _publishers[i] = _publishers[i].copyWith(deletedAt: DateTime.now());
@@ -256,9 +257,10 @@ class PersistentPublisherRepository implements PublisherRepository {
   @override
   Future<void> hardDelete(int id) async {
     final count = await countBooksReferencing(id);
-    if (count > 0)
+    if (count > 0) {
       throw StateError(
           'Нельзя удалить издательство: к нему привязано $count книг');
+    }
     _publishers.removeWhere((p) => p.id == id);
     await _save();
   }
@@ -381,8 +383,9 @@ class PersistentReaderRepository implements ReaderRepository {
 
   @override
   Future<Reader> create(Reader r) async {
-    if (!await isEmailUnique(r.email))
+    if (!await isEmailUnique(r.email)) {
       throw StateError('Читатель с таким email уже существует');
+    }
     final nextId = _readers.isEmpty
         ? 1
         : _readers.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1;
@@ -399,8 +402,9 @@ class PersistentReaderRepository implements ReaderRepository {
 
   @override
   Future<Reader> update(Reader r) async {
-    if (!await isEmailUnique(r.email, excludeId: r.id))
+    if (!await isEmailUnique(r.email, excludeId: r.id)) {
       throw StateError('Email уже используется');
+    }
     final i = _readers.indexWhere((e) => e.id == r.id);
     if (i == -1) throw StateError('Не найдено');
     _readers[i] = r;
@@ -558,14 +562,18 @@ class PersistentBookRepository implements BookRepository {
               b.isbn.toLowerCase().contains(s))
           .toList();
     }
-    if (q.genreId != null)
+    if (q.genreId != null) {
       rows = rows.where((b) => b.genreIds.contains(q.genreId)).toList();
-    if (q.publisherId != null)
+    }
+    if (q.publisherId != null) {
       rows = rows.where((b) => b.publisherId == q.publisherId).toList();
-    if (q.yearFrom != null)
+    }
+    if (q.yearFrom != null) {
       rows = rows.where((b) => b.year >= q.yearFrom!).toList();
-    if (q.yearTo != null)
+    }
+    if (q.yearTo != null) {
       rows = rows.where((b) => b.year <= q.yearTo!).toList();
+    }
 
     rows.sort((a, b) {
       final res = switch (q.sortField) {
@@ -597,8 +605,9 @@ class PersistentBookRepository implements BookRepository {
 
   @override
   Future<Book> create(Book book) async {
-    if (!await isIsbnUnique(book.isbn))
+    if (!await isIsbnUnique(book.isbn)) {
       throw StateError('Книга с таким ISBN уже существует');
+    }
     final nextId = _books.isEmpty
         ? 1
         : _books.map((b) => b.id).reduce((a, b) => a > b ? a : b) + 1;
@@ -621,8 +630,9 @@ class PersistentBookRepository implements BookRepository {
 
   @override
   Future<Book> update(Book book) async {
-    if (!await isIsbnUnique(book.isbn, excludeId: book.id))
+    if (!await isIsbnUnique(book.isbn, excludeId: book.id)) {
       throw StateError('ISBN уже занят другой книгой');
+    }
     final i = _books.indexWhere((b) => b.id == book.id);
     if (i == -1) throw StateError('Книга не найдена');
     _books[i] = book;
